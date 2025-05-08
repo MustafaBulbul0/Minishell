@@ -11,7 +11,7 @@ char	**token_separate(char *input)
 	int		i;
 
 	input = ft_strtrim(input, " ");
-	sep = malloc(sizeof(char *) * (ft_strlen(input) + 1));
+	sep = (char **)malloc(sizeof(char *) * (ft_strlen(input) + 1));
 	start = 0;
 	i = 0;
 	while (input[start])
@@ -126,4 +126,9 @@ char	*edit_sep(char *sep)
 	}
 	new_sep[j] = '\0';
 	return (new_sep);
+}
+
+t_cmd	*creat_struct(char **sep)
+{
+
 }
