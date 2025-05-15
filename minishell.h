@@ -23,11 +23,12 @@ typedef struct	s_cmd
 	char			*infile;
 	char			*outfile;
 	int				append;
+	int				redirection;
 	struct s_cmd	*next;
 }	t_cmd;
 
 int		unclosed_quotes(const char *s);
 char	*read_multiline_input(void);
-char	**token_separate(char *input);
+t_cmd	*token_separate(char *input);
 
 #endif

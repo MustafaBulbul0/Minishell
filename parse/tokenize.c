@@ -3,7 +3,8 @@
 int	special_counter(int start, char *input);
 char	*edit_sep(char *sep);
 int	is_qote(char *input, int start, int i);
-char	**token_separate(char *input)
+t_cmd	*creat_struct(char **sep);
+t_cmd	*token_separate(char *input)
 {
 	char	**sep;
 	int		start;
@@ -25,7 +26,7 @@ char	**token_separate(char *input)
 		i++;
 	}
 	sep[i] = NULL;
-	return (sep);
+	return (creat_struct(sep));
 }
 
 int	special_counter(int start, char *input)
@@ -128,7 +129,126 @@ char	*edit_sep(char *sep)
 	return (new_sep);
 }
 
+static int	is_redirections(char *input)
+{
+	int	len;
+
+	len = ft_strlen(input);
+	if (ft_strncmp(input, ">", 2) == 0 || ft_strncmp(input, ">>", 3) == 0)
+			return (1);
+	else if (ft_strncmp(input, "<", 2) == 0 || ft_strncmp(input, "<<", 3) == 0)
+			return (2);
+	return (0);
+}
+
+int	is_builtin(char *cmd)
+{
+	if (!cmd)
+		return (0);
+	return (!ft_strncmp(cmd, "cd", 3)
+		|| !ft_strncmp(cmd, "echo", 5)
+		|| !ft_strncmp(cmd, "pwd", 4)
+		|| !ft_strncmp(cmd, "env", 4)
+		|| !ft_strncmp(cmd, "export", 7)
+		|| !ft_strncmp(cmd, "unset", 6)
+		|| !ft_strncmp(cmd, "exit", 5));
+}
+
+int	is_cmd(char **sep, t_cmd *node)
+{
+	int	i;
+
+	i = 0;
+	if (node->cmd != NULL)
+		return (-1);
+	while (sep[i])
+	{
+		if (access(sep[i], F_OK) == 0 || is_builtin(sep[i]))
+		{
+			node->cmd = sep[i];
+			return (i);
+		}
+		i++;
+	}
+	return (-1);
+}
+
 t_cmd	*creat_struct(char **sep)
 {
+	t_cmd	*head;
+	t_cmd	*curr;
+	int		i;
 
+	i = 0;
+	head = NULL;
+	curr = NULL;
+	while (sep[i])
+	{
+		if (!curr)
+		{
+			curr = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
+			head = curr;
+		}
+		else if (ft_strncmp(sep[i], "|", 2) == 0)
+		{
+			curr->next = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
+			curr = curr->next;
+			i++;
+			continue ;
+		}
+		if (is_redirections(sep[i]) == 1)
+		{
+			curr->redirection = 1;
+			if (sep[i + 1])
+			{
+				curr->outfile = sep[i + 1];
+				if (ft_strncmp(sep[i], ">>", 2) == 0)
+					curr->append = 1;
+				i += 2;
+				continue ;
+			}
+			else
+			{
+				printf("bash: syntax error near unexpected token `newline'\n");
+				return (NULL);
+			}
+		}
+		else if (is_redirections(sep[i]) == 2)
+		{
+			curr->redirection = 1;
+			if (sep[i + 1])
+			{
+				curr->infile = sep[i + 1];
+				if (ft_strncmp(sep[i], "<<", 2) == 0)
+					curr->append = 2;
+				i += 2;
+				continue;
+			}
+			else
+			{
+				printf("bash: syntax error near unexpected token `newline'\n");
+				return (NULL);
+			}
+		}
+		if ((is_cmd(sep, curr) == -1 && curr->redirection == 0) && (i == 0 || ft_strncmp(sep[i], "|", 2) == 0))
+		{
+			printf("%s: command not found\n", sep[i]);
+			return NULL;
+		}
+		if (!curr->cmd)
+			curr->cmd = sep[i];
+		int count = 0;
+		if (curr->args)
+			while (curr->args[count])
+				count++;
+		char **new_args = malloc(sizeof(char *) * (count + 2));
+		for (int j = 0; j < count; j++)
+			new_args[j] = curr->args[j];
+		new_args[count] = sep[i];
+		new_args[count + 1] = NULL;
+		free(curr->args);
+		curr->args = new_args;
+		i++;
+	}
+	return head;
 }
