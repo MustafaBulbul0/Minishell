@@ -16,14 +16,19 @@
 # include <readline/history.h>
 # include "./libft/libft.h"
 
+typedef struct s_redirection
+{
+	char					*infile;
+	char					*outfile;
+	int						append;
+	struct s_redirection	*next;
+}	t_redirection;
+
 typedef struct	s_cmd
 {
 	char			*cmd;
 	char			**args;
-	char			*infile;
-	char			*outfile;
-	int				append;
-	int				redirection;
+	t_redirection	*redirections;
 	struct s_cmd	*next;
 }	t_cmd;
 

@@ -173,6 +173,30 @@ int	is_cmd(char **sep, t_cmd *node)
 	return (-1);
 }
 
+void	add_redirection(t_redirection *redirections, char **sep, int i)
+{
+	t_redirection	*node;
+	t_redirection	*curr;
+
+	curr = redirections;
+	node = (t_redirection *)ft_calloc(1, sizeof(t_redirection));
+	while (curr)
+		curr = curr->next;
+	curr = node;
+	if (is_redirections(sep[i]) == 1)
+	{
+		if (ft_strlen(sep[i]) == 2)
+			node->append = 1;
+		node->outfile = sep[i + 1];
+	}
+	else if (is_redirections(sep[i]) == 2)
+	{
+		if (ft_strlen(sep[i]) == 2)
+			node->append = 1;
+		node->outfile = sep[i -1];
+	}
+}
+
 t_cmd	*creat_struct(char **sep)
 {
 	t_cmd	*head;
