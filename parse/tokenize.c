@@ -3,7 +3,7 @@
 int	special_counter(int start, char *input);
 char	*edit_sep(char *sep);
 int	is_qote(char *input, int start, int i);
-t_cmd	*creat_struct(char **sep);
+//t_cmd	*creat_struct(char **sep);
 t_cmd	*token_separate(char *input)
 {
 	char	**sep;
@@ -26,7 +26,7 @@ t_cmd	*token_separate(char *input)
 		i++;
 	}
 	sep[i] = NULL;
-	return (creat_struct(sep));
+	return (sep);
 }
 
 int	special_counter(int start, char *input)
@@ -34,7 +34,7 @@ int	special_counter(int start, char *input)
 	int	i;
 
 	i = 0;
-	while (input[start + i] == ' ')
+	while (input[start + i] == ' ') // handle space tyeps
 		i++;
 	i = is_qote(input, start, i);
 	if (input[start + i] == '>')
@@ -193,86 +193,87 @@ void	add_redirection(t_redirection *redirections, char **sep, int i)
 	{
 		if (ft_strlen(sep[i]) == 2)
 			node->append = 1;
-		node->outfile = sep[i -1];
+		node->infile = sep[i -1];
 	}
 }
 
-t_cmd	*creat_struct(char **sep)
-{
-	t_cmd	*head;
-	t_cmd	*curr;
-	int		i;
-
-	i = 0;
-	head = NULL;
-	curr = NULL;
-	while (sep[i])
-	{
-		if (!curr)
-		{
-			curr = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
-			head = curr;
-		}
-		else if (ft_strncmp(sep[i], "|", 2) == 0)
-		{
-			curr->next = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
-			curr = curr->next;
-			i++;
-			continue ;
-		}
-		if (is_redirections(sep[i]) == 1)
-		{
-			curr->redirection = 1;
-			if (sep[i + 1])
-			{
-				curr->outfile = sep[i + 1];
-				if (ft_strncmp(sep[i], ">>", 2) == 0)
-					curr->append = 1;
-				i += 2;
-				continue ;
-			}
-			else
-			{
-				printf("bash: syntax error near unexpected token `newline'\n");
-				return (NULL);
-			}
-		}
-		else if (is_redirections(sep[i]) == 2)
-		{
-			curr->redirection = 1;
-			if (sep[i + 1])
-			{
-				curr->infile = sep[i + 1];
-				if (ft_strncmp(sep[i], "<<", 2) == 0)
-					curr->append = 2;
-				i += 2;
-				continue;
-			}
-			else
-			{
-				printf("bash: syntax error near unexpected token `newline'\n");
-				return (NULL);
-			}
-		}
-		if ((is_cmd(sep, curr) == -1 && curr->redirection == 0) && (i == 0 || ft_strncmp(sep[i], "|", 2) == 0))
-		{
-			printf("%s: command not found\n", sep[i]);
-			return NULL;
-		}
-		if (!curr->cmd)
-			curr->cmd = sep[i];
-		int count = 0;
-		if (curr->args)
-			while (curr->args[count])
-				count++;
-		char **new_args = malloc(sizeof(char *) * (count + 2));
-		for (int j = 0; j < count; j++)
-			new_args[j] = curr->args[j];
-		new_args[count] = sep[i];
-		new_args[count + 1] = NULL;
-		free(curr->args);
-		curr->args = new_args;
-		i++;
-	}
-	return head;
-}
+//t_cmd	*creat_struct(char **sep)
+//{
+//	t_cmd	*head;
+//	t_cmd	*curr;
+//	int		i;
+//
+//	i = 0;
+//	head = NULL;
+//	curr = NULL;
+//	while (sep[i])
+//	{
+//		if (!curr)
+//		{
+//			curr = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
+//			head = curr;
+//		}
+//		else if (ft_strncmp(sep[i], "|", 2) == 0)
+//		{
+//			curr->next = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
+//			curr = curr->next;
+//			i++;
+//			continue ;
+//		}
+//		if (is_redirections(sep[i]) == 1)
+//		{
+//			curr->redirection = 1;
+//			if (sep[i + 1])
+//			{
+//				curr->outfile = sep[i + 1];
+//				if (ft_strncmp(sep[i], ">>", 2) == 0)
+//					curr->append = 1;
+//				i += 2;
+//				continue ;
+//			}
+//			else
+//			{
+//				printf("bash: syntax error near unexpected token `newline'\n");
+//				return (NULL);
+//			}
+//		}
+//		else if (is_redirections(sep[i]) == 2)
+//		{
+//			curr->redirection = 1;
+//			if (sep[i + 1])
+//			{
+//				curr->infile = sep[i + 1];
+//				if (ft_strncmp(sep[i], "<<", 2) == 0)
+//					curr->append = 2;
+//				i += 2;
+//				continue;
+//			}
+//			else
+//			{
+//				printf("bash: syntax error near unexpected token `newline'\n");
+//				return (NULL);
+//			}
+//		}
+//		if ((is_cmd(sep, curr) == -1 && curr->redirection == 0) && (i == 0 || ft_strncmp(sep[i], "|", 2) == 0))
+//		{
+//			printf("%s: command not found\n", sep[i]);
+//			return NULL;
+//		}
+//		if (!curr->cmd)
+//			curr->cmd = sep[i];
+//		int count = 0;
+//		if (curr->args)
+//			while (curr->args[count])
+//				count++;
+//		char **new_args = malloc(sizeof(char *) * (count + 2));
+//		for (int j = 0; j < count; j++)
+//			new_args[j] = curr->args[j];
+//		new_args[count] = sep[i];
+//		new_args[count + 1] = NULL;
+//		free(curr->args);
+//		curr->args = new_args;
+//		i++;
+//	}
+//	return head;
+//}
+//

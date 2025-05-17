@@ -5,7 +5,8 @@ void	signal_handler(int sig);
 int	main(void)
 {
 	char	*input;
-	t_cmd	*command;
+//	t_cmd	*command;
+	char 	**sep;
 
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
@@ -20,27 +21,13 @@ int	main(void)
 		else if (!(*input))
 			continue ;
 		add_history(input);
-		command = token_separate(input);
-		while (command)
-		{
-			if (command->cmd)
-				printf("cmd :%s\n", command->cmd);
-			if (command->args[0])
-				printf("args[0] :%s\n", command->args[0]);
-			if (command->args[1] && command->args[0])
-				printf("args[1] :%s\n", command->args[1]);
-			if (command->args[2]&& command->args[1] && command->args[0])
-				printf("args[2] :%s\n", command->args[2]);
-			if (command->args[3] && command->args[2]&& command->args[1] && command->args[0])
-				printf("args[3] :%s\n", command->args[3]);
-			if (command->infile)
-				printf("infile :%s\n", command->infile);
-			if (command->outfile)
-				printf("outfile :%s\n", command->outfile);
-			printf("%d\n", command->append);
-			
-			command = command->next;
-		}
+//		command = token_separate(input);
+		sep = token_separate(input);
+
+		for (int i = 0; sep[i] ;i++)
+			printf("%s\n", sep[i]);
+
+	
 		free(input);
 	}
 	return (0);
