@@ -4,9 +4,10 @@ void	signal_handler(int sig);
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*input;
-	t_token	*tokens;
-	t_cmd	*commands;
+	char		*input;
+	t_token		*tokens;
+	t_cmd		*commands;
+	t_envlist	*envlist;
 
 	(void)argv;
 	(void)argc;
@@ -27,7 +28,15 @@ int	main(int argc, char **argv, char **envp)
 		}
 		tokens = tokenize(input);
 		commands = parse_commands(tokens);
-		exit_program(commands);
+		//execute
+		if (ft_strcmp(commands->args[0], "echo") == 0)
+			write_line(commands);
+		if (ft_strcmp(commands->args[0], "env") == 0)
+			environment(&envlist, envp);
+		if (ft_strcmp(commands->args[0], "exit") == 0)
+			exit_program(commands);
+		if (ft_strcmp(commands->args[0], "pwd") == 0)
+			print_location();
 		free_tokens(tokens);
 		free_commands(commands);
 		add_history(input);

@@ -8,7 +8,7 @@ SRCS = main.c \
 	parse/parse.c \
 	parse/tokenize.c \
 	free/free.c \
-	builtins/cd.c builtins/echo.c builtins/exit.c builtins/export.c builtins/pwd.c builtins/unset.c builtins/utils.c \
+	builtins/cd.c builtins/echo.c builtins/exit.c builtins/export.c builtins/pwd.c builtins/unset.c builtins/utils.c builtins/env.c \
 
 
 OBJS = $(SRCS:.c=.o)

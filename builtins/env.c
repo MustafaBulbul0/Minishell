@@ -1,5 +1,9 @@
 #include "../minishell.h"
 
+t_envlist	*create_env_node(char *env_string);
+void	add_node(t_envlist **list, t_envlist *new_node);
+int	print_env(t_envlist *node);
+
 void	environment(t_envlist **list, char *envp[])
 {
 	t_envlist	*new_node;
