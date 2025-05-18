@@ -7,12 +7,13 @@ int	main(int argc, char **argv, char **envp)
 	char		*input;
 	t_token		*tokens;
 	t_cmd		*commands;
-	t_envlist	*envlist;
+	t_envlist	*env;
 
 	(void)argv;
 	(void)argc;
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
+	env = envp_init(envp);
 	while (1)
 	{
 		input = read_multiline_input();
@@ -32,11 +33,16 @@ int	main(int argc, char **argv, char **envp)
 		if (ft_strcmp(commands->args[0], "echo") == 0)
 			write_line(commands);
 		if (ft_strcmp(commands->args[0], "env") == 0)
-			environment(&envlist, envp);
+			ft_envp(env);
 		if (ft_strcmp(commands->args[0], "exit") == 0)
 			exit_program(commands);
 		if (ft_strcmp(commands->args[0], "pwd") == 0)
 			print_location();
+		if (ft_strcmp(commands->args[0], "cd") == 0)
+			builtin_cd(commands->args);
+		if (ft_strcmp(commands->args[0], "unset") == 0)
+			ft_unset(env, commands->args[1]);
+
 		free_tokens(tokens);
 		free_commands(commands);
 		add_history(input);

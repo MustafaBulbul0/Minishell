@@ -59,7 +59,6 @@ typedef struct	s_cmd
 
 int		unclosed_quotes(const char *s);
 char	*read_multiline_input(void);
-int		ft_strcmp(const char *s1, const char *s2);
 t_token	*tokenize(char *input);
 char	**smart_split(const char *input);
 char	*merge_and_strip_quotes(const char *s);
@@ -69,5 +68,10 @@ t_cmd	*parse_commands(t_token *tokens);
 
 void	free_commands(t_cmd *cmd_list);
 void	free_tokens(t_token *tokens);
+
+t_envlist	*envp_init(char *envp[]);
+int		ft_strcmp(const char *s1, const char *s2);
+char	*ft_strndup(const char *s, size_t n);
+int	is_numeric(char *str);
 
 #endif
