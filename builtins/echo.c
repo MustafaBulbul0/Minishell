@@ -27,7 +27,7 @@ void	write_line(t_cmd *command)
 			}
 		}
 	}
-	else
+	else if (ft_strcmp(command->args[0], cmd) == 0)
 	{
 		i = 1;
 		while (command->args[i])

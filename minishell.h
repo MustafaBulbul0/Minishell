@@ -12,9 +12,11 @@
 # include <dirent.h>
 # include <termios.h>
 # include <termcap.h>
+# include <stddef.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "./libft/libft.h"
+# include "./builtins/builtins.h"
 
 typedef enum s_token_type
 {

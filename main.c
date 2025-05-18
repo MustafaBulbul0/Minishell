@@ -2,12 +2,14 @@
 
 void	signal_handler(int sig);
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
 	t_token	*tokens;
 	t_cmd	*commands;
 
+	(void)argv;
+	(void)argc;
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
 	while (1)
@@ -25,7 +27,7 @@ int	main(void)
 		}
 		tokens = tokenize(input);
 		commands = parse_commands(tokens);
-		//excute
+		exit_program(commands);
 		free_tokens(tokens);
 		free_commands(commands);
 		add_history(input);
