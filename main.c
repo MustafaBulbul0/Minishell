@@ -5,8 +5,8 @@ void	signal_handler(int sig);
 int	main(void)
 {
 	char	*input;
-//	t_cmd	*command;
-	char 	**sep;
+	t_token	*tokens;
+	t_cmd	*commands;
 
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
@@ -19,15 +19,16 @@ int	main(void)
 			break ;
 		}
 		else if (!(*input))
+		{
+			free(input);
 			continue ;
+		}
+		tokens = tokenize(input);
+		commands = parse_commands(tokens);
+		//excute
+		free_tokens(tokens);
+		free_commands(commands);
 		add_history(input);
-//		command = token_separate(input);
-		sep = token_separate(input);
-
-		for (int i = 0; sep[i] ;i++)
-			printf("%s\n", sep[i]);
-
-	
 		free(input);
 	}
 	return (0);
