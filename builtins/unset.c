@@ -1,22 +1,43 @@
 #include "../minishell.h"
 
-void	ft_unset(t_envlist *list, char *del_key)
-{
-	t_envlist	*temp;
+static void	remove_node(t_envlist **list, char *key);
 
-	temp = list;
-	if (ft_strcmp(temp->key, del_key) == 0)
-		list = list->next;
-	else
+void	ft_unset(t_envlist *list, char **arg)
+{
+	int		i;
+
+	if (!arg || !arg[1])
+		return ;
+	i = 1;
+	while (arg[i])
 	{
-		while (temp->next)
+		remove_node(&list, arg[i]);
+		i++;
+	}
+}
+
+static void	remove_node(t_envlist **list, char *key)
+{
+	t_envlist	*curr;
+	t_envlist	*prev;
+
+	curr = *list;
+	prev = NULL;
+	while (curr)
+	{
+		if (ft_strcmp(curr->key, key) == 0)
 		{
-			if (ft_strcmp(temp->next->key, del_key) == 0)
-			{
-				temp->next = temp->next->next;
-				break ;
-			}
-			temp = temp->next;
+			if (prev)
+				prev->next = curr->next;
+			else
+				*list = curr->next;
+			free(curr->key);
+			if (curr->value)
+				free(curr->value);
+			free(curr);
+			return ;
 		}
+		prev = curr;
+		curr = curr->next;
 	}
 }

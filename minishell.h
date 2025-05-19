@@ -73,5 +73,6 @@ t_envlist	*envp_init(char *envp[]);
 int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strndup(const char *s, size_t n);
 int	is_numeric(char *str);
+char	**ft_strdup_two_dimension(char **arg);
 
 #endif

@@ -41,7 +41,9 @@ int	main(int argc, char **argv, char **envp)
 		if (ft_strcmp(commands->args[0], "cd") == 0)
 			builtin_cd(commands->args);
 		if (ft_strcmp(commands->args[0], "unset") == 0)
-			ft_unset(env, commands->args[1]);
+			ft_unset(env, commands->args);
+		if (ft_strcmp(commands->args[0], "export") == 0)
+			ft_export(env, commands->args);
 
 		free_tokens(tokens);
 		free_commands(commands);
