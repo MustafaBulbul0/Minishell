@@ -7,6 +7,7 @@ SRCS = main.c \
 	parse/parse_utils.c \
 	parse/parse.c \
 	parse/tokenize.c \
+	execute/execution.c \
 	free/free.c \
 	builtins/cd.c builtins/echo.c builtins/exit.c builtins/export.c builtins/pwd.c builtins/unset.c builtins/env.c \
 	utils/envp_init.c \

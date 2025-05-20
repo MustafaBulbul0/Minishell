@@ -29,21 +29,7 @@ int	main(int argc, char **argv, char **envp)
 		}
 		tokens = tokenize(input);
 		commands = parse_commands(tokens);
-		//execute
-		if (ft_strcmp(commands->args[0], "echo") == 0)
-			write_line(commands);
-		if (ft_strcmp(commands->args[0], "env") == 0)
-			ft_envp(env);
-		if (ft_strcmp(commands->args[0], "exit") == 0)
-			exit_program(commands);
-		if (ft_strcmp(commands->args[0], "pwd") == 0)
-			print_location();
-		if (ft_strcmp(commands->args[0], "cd") == 0)
-			builtin_cd(commands->args);
-		if (ft_strcmp(commands->args[0], "unset") == 0)
-			ft_unset(env, commands->args);
-		if (ft_strcmp(commands->args[0], "export") == 0)
-			ft_export(env, commands->args);
+		ft_execute(env, commands);
 
 		free_tokens(tokens);
 		free_commands(commands);

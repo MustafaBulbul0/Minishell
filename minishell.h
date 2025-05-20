@@ -65,6 +65,7 @@ char	*merge_and_strip_quotes(const char *s);
 
 void	print_commands(t_cmd *cmd_list);
 t_cmd	*parse_commands(t_token *tokens);
+void	ft_execute(t_envlist *env, t_cmd *command);
 
 void	free_commands(t_cmd *cmd_list);
 void	free_tokens(t_token *tokens);
@@ -74,5 +75,7 @@ int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strndup(const char *s, size_t n);
 int	is_numeric(char *str);
 char	**ft_strdup_two_dimension(char **arg);
+
+int	ft_access(char *cmd);
 
 #endif
