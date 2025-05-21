@@ -11,7 +11,7 @@ int	builtin_cd(char **args)
 		perror("minishell: cd: getcwd");
 		return (1);
 	}
-	oldpwd = strdup(cwd);
+	oldpwd = ft_strdup(cwd);
 	if (!oldpwd)
 		return (1);
 	if (!args[1] || ft_strcmp(args[1], "") == 0 || ft_strcmp(args[1], "~") == 0)

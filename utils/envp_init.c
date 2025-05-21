@@ -1,7 +1,7 @@
 #include "./../minishell.h"
 
 static t_envlist	*create_env_node(char *env_string);
-static void	add_node(t_envlist **list, t_envlist *new_node);
+static void			add_node(t_envlist **list, t_envlist *new_node);
 
 t_envlist	*envp_init(char *envp[])
 {
@@ -19,7 +19,7 @@ t_envlist	*envp_init(char *envp[])
 		add_node(&list, new_node);
 		i++;
 	}
-	return	(list);
+	return (list);
 }
 
 static t_envlist	*create_env_node(char *env_string)

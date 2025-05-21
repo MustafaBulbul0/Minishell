@@ -16,12 +16,13 @@ static int	operator_len(const char *s)
 
 static int	token_len(const char *s)
 {
-	int i = 0;
-	char quote = 0;
+	int		i;
+	char	quote;
 
+	i = 0;
+	quote = '\0';
 	if (is_operator_char(s[0]))
 		return (operator_len(s));
-
 	while (s[i])
 	{
 		if (!quote && (s[i] == '\'' || s[i] == '"'))
@@ -29,7 +30,7 @@ static int	token_len(const char *s)
 		else if (quote && s[i] == quote)
 			quote = 0;
 		else if (!quote && (s[i] == ' ' || is_operator_char(s[i])))
-			break;
+			break ;
 		i++;
 	}
 	return (i);
@@ -37,10 +38,12 @@ static int	token_len(const char *s)
 
 char	**smart_split(const char *input)
 {
-	char	**tokens = malloc(sizeof(char *) * (ft_strlen(input) + 1));
-	int		j = 0;
+	char	**tokens;
+	int		j;
 	int		len;
 
+	j = 0;
+	tokens = malloc(sizeof(char *) * (ft_strlen(input) + 1));
 	while (*input)
 	{
 		while (*input == ' ')
@@ -57,13 +60,14 @@ char	**smart_split(const char *input)
 	return (tokens);
 }
 
-
 char	*merge_and_strip_quotes(const char *s)
 {
-	char	*result = ft_calloc(1, 1);
-	int		i = 0;
+	char	*result;
+	int		i;
 	char	quote;
 
+	i = 0;
+	result = ft_calloc(1, 1);
 	while (s[i])
 	{
 		if (s[i] == '\'' || s[i] == '"')

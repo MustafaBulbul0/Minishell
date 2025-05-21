@@ -10,7 +10,7 @@ SRCS = main.c \
 	execute/execution.c \
 	free/free.c \
 	builtins/cd.c builtins/echo.c builtins/exit.c builtins/export.c builtins/pwd.c builtins/unset.c builtins/env.c \
-	utils/envp_init.c utils/ft_access.c \
+	utils/envp_init.c utils/access_path.c \
 	utils/utils.c
 
 

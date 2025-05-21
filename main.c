@@ -30,7 +30,6 @@ int	main(int argc, char **argv, char **envp)
 		tokens = tokenize(input);
 		commands = parse_commands(tokens);
 		ft_execute(env, commands);
-
 		free_tokens(tokens);
 		free_commands(commands);
 		add_history(input);

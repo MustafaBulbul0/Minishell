@@ -40,13 +40,13 @@ t_token	*handle_redirections(t_token *token, t_cmd *cmd)
 		&& token->next != NULL && token->next->type == T_WORD)
 	{
 		token = token->next;
-		redir->infile = strdup(token->str);
+		redir->infile = ft_strdup(token->str);
 	}
 	else if ((token->type == T_REDIR_OUT || token->type == T_APPEND)
 		&& token->next != NULL && token->next->type == T_WORD)
 	{
 		token = token->next;
-		redir->outfile = strdup(token->str);
+		redir->outfile = ft_strdup(token->str);
 		redir->append = (token->type == T_APPEND);
 	}
 	if (cmd->redirections == NULL)
@@ -86,13 +86,13 @@ t_token	*parse_simple_cmd(t_token *token, t_cmd *cmd)
 	i = 0;
 	while (i < arg_count)
 	{
-		cmd->args[i] = strdup(token->str);
+		cmd->args[i] = ft_strdup(token->str);
 		token = token->next;
 		i++;
 	}
 	cmd->args[i] = NULL;
 	if (arg_count > 0)
-		cmd->cmd = strdup(cmd->args[0]);
+		cmd->cmd = ft_strdup(cmd->args[0]);
 	return (token);
 }
 

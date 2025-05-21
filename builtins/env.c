@@ -5,7 +5,7 @@ void	ft_envp(t_envlist *env)
 	t_envlist	*temp;
 
 	temp = env;
-	while (temp)
+	while (temp->value)
 	{
 		printf("%s%s%s\n", temp->key,"=",temp->value);
 		temp = temp->next;
