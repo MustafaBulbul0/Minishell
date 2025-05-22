@@ -1,6 +1,6 @@
 #include "./../minishell.h"
 
-static int	is_builtins(t_cmd *commands, t_envlist *env);
+static void	execute_builtin(t_cmd *cmd, t_envlist *env);
 
 void	execute_external_command(t_cmd *cmd, t_envlist *env)
 {
@@ -36,64 +36,65 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 	curr = cmd_list;
 	while (curr)
 	{
-		if (curr->next != NULL)
-			pipe(pipe_fd);
-		pid = fork();
-		if (pid == 0)
+		if (!curr->next && is_builtin(curr))
 		{
-			if (in_fd != 0)
-			{
-				dup2(in_fd, 0);
-				close(in_fd);
-			}
-			if (curr->next != NULL)
-			{
-				close(pipe_fd[0]);
-				dup2(pipe_fd[1], 1);
-				close(pipe_fd[1]);
-			}
 			handle_redirections_fd(curr);
-			if (is_builtins(curr, env))
-				exit(0);
-			execute_external_command(curr, env);
-			exit(1);
+			execute_builtin(curr, env);
 		}
 		else
 		{
-			waitpid(pid, NULL, 0);
-			if (in_fd != 0)
-				close(in_fd);
-			if (curr->next != NULL)
+			if (curr->next)
+				pipe(pipe_fd);
+			pid = fork();
+			if (pid == 0)
 			{
-				close(pipe_fd[1]);
-				in_fd = pipe_fd[0];
+				if (in_fd != 0)
+				{
+					dup2(in_fd, 0);
+					close(in_fd);
+				}
+				if (curr->next)
+				{
+					close(pipe_fd[0]);
+					dup2(pipe_fd[1], 1);
+					close(pipe_fd[1]);
+				}
+				handle_redirections_fd(curr);
+				if (is_builtin(curr))
+					exit(0);
+				execute_external_command(curr, env);
+				exit(1);
+			}
+			else
+			{
+				waitpid(pid, NULL, 0);
+				if (in_fd != 0)
+					close(in_fd);
+				if (curr->next)
+				{
+					close(pipe_fd[1]);
+					in_fd = pipe_fd[0];
+				}
 			}
 		}
 		curr = curr->next;
 	}
 }
 
-static int	is_builtins(t_cmd *commands, t_envlist *env)
+static void	execute_builtin(t_cmd *cmd, t_envlist *env)
 {
-	if (ft_strcmp(commands->cmd, "echo") == 0)
-		write_line(commands);
-	else if (ft_strcmp(commands->cmd, "env") == 0)
+	if (ft_strcmp(cmd->cmd, "echo") == 0)
+		write_line(cmd);
+	else if (ft_strcmp(cmd->cmd, "env") == 0)
 		ft_envp(env);
-	else if (ft_strcmp(commands->cmd, "exit") == 0)
-		exit_program(commands);
-	else if (ft_strcmp(commands->cmd, "pwd") == 0)
+	else if (ft_strcmp(cmd->cmd, "exit") == 0)
+		exit_program(cmd);
+	else if (ft_strcmp(cmd->cmd, "pwd") == 0)
 		print_location();
-	else if (ft_strcmp(commands->cmd, "cd") == 0)
-		builtin_cd(commands->args);
-	else if (ft_strcmp(commands->cmd, "unset") == 0)
-		ft_unset(env, commands->args);
-	else if (ft_strcmp(commands->cmd, "export") == 0)
-		ft_export(env, commands->args);
-	return (ft_strcmp(commands->cmd, "echo") == 0
-		|| ft_strcmp(commands->cmd, "env") == 0
-		|| ft_strcmp(commands->cmd, "exit") == 0
-		|| ft_strcmp(commands->cmd, "pwd") == 0
-		|| ft_strcmp(commands->cmd, "cd") == 0
-		|| ft_strcmp(commands->cmd, "unset") == 0
-		|| ft_strcmp(commands->cmd, "export") == 0);
+	else if (ft_strcmp(cmd->cmd, "cd") == 0)
+		builtin_cd(cmd->args);
+	else if (ft_strcmp(cmd->cmd, "unset") == 0)
+		ft_unset(env, cmd->args);
+	else if (ft_strcmp(cmd->cmd, "export") == 0)
+		ft_export(env, cmd->args);
 }

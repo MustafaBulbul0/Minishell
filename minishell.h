@@ -79,6 +79,7 @@ void	ft_free_split(char	**arg);
 char	*ft_strjoin_three(char *s1, char *s2, char *s3);
 char	**envlist_to_array(t_envlist *env);
 void	handle_redirections_fd(t_cmd *cmd);
+int	is_builtin(t_cmd *cmd);
 
 char	*get_exec_path(char *cmd);
 int	list_len(t_cmd	*list);

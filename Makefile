@@ -4,13 +4,13 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 SRCS = main.c \
 	parse/read_line.c \
-	parse/parse_utils.c \
+	utils/parse_utils.c \
 	parse/parse.c \
 	parse/tokenize.c \
 	execute/execution.c \
 	free/free.c \
 	builtins/cd.c builtins/echo.c builtins/exit.c builtins/export.c builtins/pwd.c builtins/unset.c builtins/env.c \
-	utils/envp_init.c utils/access_path.c \
+	utils/envp_init.c utils/access_path.c utils/execution_utils.c \
 	utils/utils.c
 
 
