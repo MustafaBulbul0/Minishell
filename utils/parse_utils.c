@@ -60,6 +60,16 @@ char	**smart_split(const char *input)
 	return (tokens);
 }
 
+static char	*ft_join(char c, char *result, int *i)
+{
+	char	tmp[2];
+
+	tmp[0] = c;
+	tmp[1] = 0;
+	(*i)++;
+	return (ft_strjoin(result, tmp));
+}
+
 char	*merge_and_strip_quotes(const char *s)
 {
 	char	*result;
@@ -74,25 +84,12 @@ char	*merge_and_strip_quotes(const char *s)
 		{
 			quote = s[i++];
 			while (s[i] && s[i] != quote)
-			{
-				char tmp[2] = {s[i], 0};
-				char *old = result;
-				result = ft_strjoin(result, tmp);
-				free(old);
-				i++;
-			}
+				result = ft_join(s[i], result, &i);
 			if (s[i] == quote)
 				i++;
 		}
 		else
-		{
-			char tmp[2] = {s[i], 0};
-			char *old = result;
-			result = ft_strjoin(result, tmp);
-			free(old);
-			i++;
-		}
+			result = ft_join(s[i], result, &i);
 	}
-	result = ft_strtrim(result, "\n");
 	return (result);
 }

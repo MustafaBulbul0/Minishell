@@ -2,18 +2,16 @@
 
 void	signal_handler(int sig);
 
-int	main(int argc, char **argv, char **envp)
+int	main()
 {
 	char		*input;
 	t_token		*tokens;
 	t_cmd		*commands;
 	t_envlist	*env;
 
-	(void)argv;
-	(void)argc;
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
-	env = envp_init(envp);
+	env = envp_init(environ);
 	while (1)
 	{
 		input = read_multiline_input();

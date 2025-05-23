@@ -18,6 +18,8 @@
 # include "./libft/libft.h"
 # include "./builtins/builtins.h"
 
+extern char **environ;
+
 typedef enum s_token_type
 {
 	T_WORD = 0,			// Genel kelime (komut, argüman, dosya adı)
