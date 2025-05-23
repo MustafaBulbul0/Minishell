@@ -36,7 +36,7 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 	curr = cmd_list;
 	while (curr)
 	{
-		if (!curr->next && is_builtin(curr))
+		if (!curr->next && is_builtin(curr) && curr == cmd_list)
 		{
 			handle_redirections_fd(curr);
 			execute_builtin(curr, env);
@@ -61,9 +61,13 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 				}
 				handle_redirections_fd(curr);
 				if (is_builtin(curr))
-					exit(0);
+				{
+					handle_redirections_fd(curr);
+					execute_builtin(curr, env);
+					exit (0);
+				}
 				execute_external_command(curr, env);
-				exit(1);
+				exit (1);
 			}
 			else
 			{

@@ -28,7 +28,7 @@ t_redirection	*create_redirection(void)
 	return (redir);
 }
 
-t_token	*handle_redirections(t_token *token, t_cmd *cmd)
+static t_token	*handle_redirections(t_token *token, t_cmd *cmd)
 {
 	t_redirection	*redir;
 	t_redirection	*tmp;
@@ -61,7 +61,7 @@ t_token	*handle_redirections(t_token *token, t_cmd *cmd)
 	return (token->next);
 }
 
-int	count_args(t_token *token)
+static int	count_t_token(t_token *token)
 {
 	int	count;
 
@@ -74,12 +74,12 @@ int	count_args(t_token *token)
 	return (count);
 }
 
-t_token	*parse_simple_cmd(t_token *token, t_cmd *cmd)
+static t_token	*parse_simple_cmd(t_token *token, t_cmd *cmd)
 {
 	int		i;
 	int		arg_count;
 
-	arg_count = count_args(token);
+	arg_count = count_t_token(token);
 	cmd->args = malloc(sizeof(char *) * (arg_count + 1));
 	if (cmd->args == NULL)
 		return (NULL);
