@@ -96,7 +96,7 @@ static void	execute_builtin(t_cmd *cmd, t_envlist *env)
 	else if (ft_strcmp(cmd->cmd, "pwd") == 0)
 		print_location();
 	else if (ft_strcmp(cmd->cmd, "cd") == 0)
-		builtin_cd(cmd->args);
+		builtin_cd(cmd->args, env);
 	else if (ft_strcmp(cmd->cmd, "unset") == 0)
 		ft_unset(env, cmd->args);
 	else if (ft_strcmp(cmd->cmd, "export") == 0)
