@@ -71,7 +71,10 @@ char	**envlist_to_array(t_envlist *env)
 	tmp = env;
 	while (tmp)
 	{
-		arr[i] = ft_strjoin_three(tmp->key, "=", tmp->value);
+		if (tmp->value)
+			arr[i] = ft_strjoin_three(tmp->key, "=", tmp->value);
+		else
+			arr[i] = ft_strjoin_three(tmp->key, "=", "");
 		if (!arr[i])
 			return (NULL);
 		i++;

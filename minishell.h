@@ -59,7 +59,6 @@ typedef struct	s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
-int		unclosed_quotes(const char *s);
 char	*read_multiline_input(void);
 t_token	*tokenize(char *input);
 char	**smart_split(const char *input);

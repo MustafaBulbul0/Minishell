@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-int	unclosed_quotes(const char *s);
+static int	unclosed_quotes(const char *s);
 
 char	*read_multiline_input(void)
 {
@@ -30,7 +30,7 @@ char	*read_multiline_input(void)
 	return (input);
 }
 
-int	unclosed_quotes(const char *s)
+static int	unclosed_quotes(const char *s)
 {
 	int	s_quote;
 	int	d_quote;
