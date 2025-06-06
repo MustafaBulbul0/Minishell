@@ -42,6 +42,10 @@ static t_envlist	*create_env_node(char *env_string)
 		return (NULL);
 	node->key = key;
 	node->value = value;
+	if (env_string[i] == '=')
+		node->eq = 1;
+	else
+		node->eq = 0;
 	node->next = NULL;
 	return (node);
 }

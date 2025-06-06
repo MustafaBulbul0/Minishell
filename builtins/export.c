@@ -73,6 +73,7 @@ static void	add_or_update_env(t_envlist *env, t_envlist *node)
 				curr->value = ft_strdup(node->value);
 			else
 				curr->value = NULL;
+			curr->eq = node->eq;
 			return ;
 		}
 		if (!curr->next)

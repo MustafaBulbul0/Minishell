@@ -8,8 +8,8 @@ void	ft_envp(t_envlist *env)
 	while (temp)
 	{
 		if (temp->value)
-			printf("%s%s%s\n", temp->key,"=",temp->value);
-		else
+			printf("%s=%s\n", temp->key,temp->value);
+		else if (temp->eq)
 			printf("%s=\n", temp->key);
 		temp = temp->next;
 	}

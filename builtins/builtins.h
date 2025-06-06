@@ -5,6 +5,7 @@ typedef struct s_envlist
 {
 	char				*key;
 	char				*value;
+	int					eq;
 	struct s_envlist	*next;
 }	t_envlist;
 
