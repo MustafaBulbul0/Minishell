@@ -1,6 +1,5 @@
 #include "../minishell.h"
 
-
 char	*get_env_value(t_envlist *env, const char *key)
 {
 	while (env)
@@ -80,7 +79,6 @@ int	builtin_cd(char **args, t_envlist *env)
 		free(oldpwd);
 		return (1);
 	}
-
 	update_env_value(env, "OLDPWD", oldpwd);
 	update_env_value(env, "PWD", cwd);
 	free(oldpwd);
