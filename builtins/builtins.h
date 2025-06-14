@@ -19,6 +19,8 @@ void	exit_program(t_cmd *commands);
 int		builtin_cd(char **envp, t_envlist *env);
 void	ft_unset(t_envlist *list, char **arg);
 void	ft_export(t_envlist	*env, char **arg);
+void	sort_envlist(t_envlist *list);
+void	print_export_format(t_envlist *list);
 
 
 #endif

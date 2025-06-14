@@ -1,5 +1,11 @@
 #include "../minishell.h"
 
+static void	print_display(void)
+{
+	write(2, "exit\n", 5);
+	write(2, "minishell: exit: too many arguments\n", 36);
+}
+
 void	exit_program(t_cmd *commands)
 {
 	int	status;
@@ -10,10 +16,7 @@ void	exit_program(t_cmd *commands)
 		argc++;
 	printf("%d\n", argc);
 	if (argc > 2)
-	{
-		write(2, "exit\n", 5);
-		write(2, "minishell: exit: too many arguments\n", 36);
-	}
+		print_display();
 	else
 	{
 		if (is_numeric(commands->args[1]) == 0)

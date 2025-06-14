@@ -59,30 +59,30 @@ typedef struct	s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
-char	*read_multiline_input(void);
-t_token	*tokenize(char *input);
-char	**smart_split(const char *input);
-char	*merge_and_strip_quotes(const char *s);
+char		*read_multiline_input(void);
+t_token		*tokenize(char *input);
+char		**smart_split(const char *input);
+char		*merge_and_strip_quotes(const char *s);
 
-void	print_commands(t_cmd *cmd_list);
-t_cmd	*parse_commands(t_token *tokens);
-void	ft_execute(t_envlist *env, t_cmd *command);
+void		print_commands(t_cmd *cmd_list);
+t_cmd		*parse_commands(t_token *tokens);
+void		ft_execute(t_envlist *env, t_cmd *command);
 
-void	free_commands(t_cmd *cmd_list);
-void	free_tokens(t_token *tokens);
+void		free_commands(t_cmd *cmd_list);
+void		free_tokens(t_token *tokens);
 
 t_envlist	*envp_init(char *envp[]);
-int		ft_strcmp(const char *s1, const char *s2);
-char	*ft_strndup(const char *s, size_t n);
-int	is_numeric(char *str);
-char	**ft_strdup_two_dimension(char **arg);
-void	ft_free_split(char	**arg);
-char	*ft_strjoin_three(char *s1, char *s2, char *s3);
-char	**envlist_to_array(t_envlist *env);
-void	handle_redirections_fd(t_cmd *cmd);
-int	is_builtin(t_cmd *cmd);
+int			ft_strcmp(const char *s1, const char *s2);
+char		*ft_strndup(const char *s, size_t n);
+int			is_numeric(char *str);
+char		**ft_strdup_two_dimension(char **arg);
+void		ft_free_split(char	**arg);
+char		*ft_strjoin_three(char *s1, char *s2, char *s3);
+char		**envlist_to_array(t_envlist *env);
+void		handle_redirections_fd(t_cmd *cmd);
+int			is_builtin(t_cmd *cmd);
 
-char	*get_exec_path(char *cmd);
-int	list_len(t_cmd	*list);
+char		*get_exec_path(char *cmd);
+int			list_len(t_cmd	*list);
 
 #endif
