@@ -18,6 +18,7 @@ void	write_line(t_cmd *command)
 	}
 	if (temp == 1)
 		printf("\n");
+	g_last_exit = 0;
 }
 
 static int	delete_new_line(t_cmd *command)

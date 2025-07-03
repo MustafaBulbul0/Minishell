@@ -67,7 +67,7 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 					exit (0);
 				}
 				execute_external_command(curr, env);
-				exit (1);
+				exit (127);
 			}
 			else
 			{
@@ -79,6 +79,7 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 					close(pipe_fd[1]);
 					in_fd = pipe_fd[0];
 				}
+				g_last_exit = 1;
 			}
 		}
 		curr = curr->next;
