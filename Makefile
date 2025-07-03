@@ -3,6 +3,7 @@ LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 SRCS = main.c \
+	expand_variable.c \
 	parse/read_line.c parse/parse.c parse/tokenize.c \
 	execute/execution.c \
 	builtins/cd.c builtins/echo.c builtins/exit.c builtins/export.c \

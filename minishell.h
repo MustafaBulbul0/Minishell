@@ -19,6 +19,7 @@
 # include "./builtins/builtins.h"
 
 extern char **environ;
+extern int g_last_exit;
 
 typedef enum s_token_type
 {
@@ -79,6 +80,7 @@ char		**ft_strdup_two_dimension(char **arg);
 void		ft_free_split(char	**arg);
 char		*ft_strjoin_three(char *s1, char *s2, char *s3);
 char		**envlist_to_array(t_envlist *env);
+char		*expand_variable(char *str, t_envlist *env);
 void		handle_redirections_fd(t_cmd *cmd);
 int			is_builtin(t_cmd *cmd);
 
