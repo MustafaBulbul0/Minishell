@@ -57,6 +57,8 @@ typedef struct	s_cmd
 	char			*cmd;
 	char			**args;
 	t_redirection	*redirections;
+//	int				is_interactive;   // Yeni: Kabuğun interaktif olup olmadığını belirtir
+//	int				is_piped_command; // Yeni: Komutun bir pipe'ın parçası olup olmadığını belirtir
 	struct s_cmd	*next;
 }	t_cmd;
 
