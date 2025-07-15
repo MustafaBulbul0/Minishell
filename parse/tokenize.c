@@ -1,5 +1,81 @@
 #include "./../minishell.h"
 
+static t_token	*new_token(char *str, t_token_type type, int quote_type);
+static void		add_token_back(t_token **head, t_token *new);
+static int		operator_len(const char *s);
+static int		word_len(const char *s);
+static char		*handle_operator_token(t_token **head, char *input);
+static char		*handle_word_token(t_token **head, char *input);
+
+static t_token	*new_token(char *str, t_token_type type, int quote_type)
+{
+	t_token	*token;
+
+	token = malloc(sizeof(t_token));
+	if (!token)
+		return (NULL);
+	token->str = str;
+	token->type = type;
+	token->quote_type = quote_type;
+	token->next = NULL;
+	return (token);
+}
+
+static void	add_token_back(t_token **head, t_token *new)
+{
+	t_token	*current;
+
+	if (!head || !new)
+		return ;
+	if (*head == NULL)
+	{
+		*head = new;
+		return ;
+	}
+	current = *head;
+	while (current->next)
+		current = current->next;
+	current->next = new;
+}
+
+static int	operator_len(const char *s)
+{
+	if (!s)
+		return (0);
+	if ((s[0] == '<' || s[0] == '>') && s[1] == s[0])
+		return (2);
+	if (s[0] == '|' || s[0] == '<' || s[0] == '>')
+		return (1);
+	return (0);
+}
+
+static int	word_len(const char *s)
+{
+	int		i;
+	char	quote_char;
+
+	i = 0;
+	quote_char = 0;
+	while (s[i])
+	{
+		if (quote_char == 0 && (s[i] == '\'' || s[i] == '"'))
+		{
+			quote_char = s[i];
+			i++;
+			while (s[i] && s[i] != quote_char)
+				i++;
+			if (s[i])
+				i++;
+			quote_char = 0;
+		}
+		else if (!quote_char && ft_strchr(" \t\n|<>", s[i]))
+			break ;
+		else
+			i++;
+	}
+	return (i);
+}
+
 t_token_type	get_token_type(const char *s)
 {
 	if (!ft_strcmp(s, "|"))
@@ -12,42 +88,54 @@ t_token_type	get_token_type(const char *s)
 		return (T_REDIR_IN);
 	else if (!ft_strcmp(s, "<<"))
 		return (T_HEREDOC);
-	else if (!ft_strcmp(s, "&&"))
-		return (T_AND);
-	else if (!ft_strcmp(s, "||"))
-		return (T_OR);
-	else if (!ft_strcmp(s, "("))
-		return (T_OPEN_PAREN);
-	else if (!ft_strcmp(s, ")"))
-		return (T_CLOSE_PAREN);
 	return (T_WORD);
+}
+
+static char	*handle_operator_token(t_token **head, char *input)
+{
+	int		len;
+	char	*str;
+
+	len = operator_len(input);
+	str = ft_substr(input, 0, len);
+	add_token_back(head, new_token(str, get_token_type(str), 0));
+	return (input + len);
+}
+
+static char	*handle_word_token(t_token **head, char *input)
+{
+	int		len;
+	char	*str;
+	int		quote_type;
+
+	len = word_len(input);
+	if (len == 0)
+		return (input);
+	str = ft_substr(input, 0, len);
+	quote_type = 0;
+	if (str[0] == '\'')
+		quote_type = 1;
+	else if (str[0] == '"')
+		quote_type = 2;
+	add_token_back(head, new_token(str, T_WORD, quote_type));
+	return (input + len);
 }
 
 t_token	*tokenize(char *input)
 {
 	t_token	*head;
-	char	**split;
-	int		i;
 
-	i = -1;
 	head = NULL;
-	split = smart_split(input);
-	while (split[++i])
+	while (*input)
 	{
-		t_token *new = malloc(sizeof(t_token));
-		new->str = merge_and_strip_quotes(split[i]);
-		new->type = get_token_type(split[i]);
-		new->next = NULL;
-		if (!head)
-			head = new;
+		while (*input && ft_strchr(" \t\n", *input))
+			input++;
+		if (!*input)
+			break ;
+		if (operator_len(input) > 0)
+			input = handle_operator_token(&head, input);
 		else
-		{
-			t_token *tmp = head;
-			while (tmp->next)
-				tmp = tmp->next;
-			tmp->next = new;
-		}
+			input = handle_word_token(&head, input);
 	}
-	free(split);
 	return (head);
 }

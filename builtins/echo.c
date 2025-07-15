@@ -36,7 +36,7 @@ static int	delete_new_line(t_cmd *command)
 		j = 2;
 		while (command->args[i][j])
 		{
-			if ((strncmp(command->args[i] +j, "n", 1) != 0))
+			if ((strncmp(command->args[i] + j, "n", 1) != 0))
 				return (i);
 			j++;
 		}

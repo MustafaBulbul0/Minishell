@@ -25,54 +25,6 @@ void	update_env_value(t_envlist *env, const char *key, const char *value)
 	}
 }
 
-static int	get_cd_target(char **args, t_envlist *env, char **target_out)
-{
-	int		argc;
-	char	*home_val;
-	char	*oldpwd_val;
-
-	argc = 0;
-	while (args[argc])
-		argc++;
-	if (argc > 2)
-	{
-		write(2, "minishell: cd: too many arguments\n", 35);
-		g_last_exit = 1;
-		return (1);
-	}
-	if (!args[1] || ft_strcmp(args[1], "~") == 0)
-	{
-		home_val = get_env_value(env, "HOME");
-		if (!home_val)
-		{
-			write(2, "minishell: cd: HOME not set\n", 29);
-			g_last_exit = 1;
-			return (1);
-		}
-		*target_out = home_val;
-	}
-	else if (ft_strcmp(args[1], "-") == 0)
-	{
-		oldpwd_val = get_env_value(env, "OLDPWD");
-		if (!oldpwd_val)
-		{
-			write(2, "minishell: cd: OLDPWD not set\n", 30);
-			g_last_exit = 1;
-			return (1);
-		}
-		printf("%s\n", oldpwd_val);
-		*target_out = oldpwd_val;
-	}
-	else if (ft_strcmp(args[1], "") == 0)
-	{
-		g_last_exit = 0;
-		return (2);
-	}
-	else
-		*target_out = args[1];
-	return (0);
-}
-
 static int	update_cd_env_vars(t_envlist *env, char *oldpwd_val)
 {
 	char	new_cwd[1024];
@@ -88,10 +40,68 @@ static int	update_cd_env_vars(t_envlist *env, char *oldpwd_val)
 	return (0);
 }
 
-int	builtin_cd(char **args, t_envlist *env)
+static int	handle_cd_special_cases(char *arg,
+		t_envlist *env, char **target_out)
+{
+	char	*val;
+
+	if (!arg || ft_strcmp(arg, "~") == 0)
+	{
+		val = get_env_value(env, "HOME");
+		if (!val)
+		{
+			write(2, "minishell: cd: HOME not set\n", 29);
+			g_last_exit = 1;
+			return (1);
+		}
+		*target_out = val;
+		return (0);
+	}
+	if (ft_strcmp(arg, "-") == 0)
+	{
+		val = get_env_value(env, "OLDPWD");
+		if (!val)
+		{
+			write(2, "minishell: cd: OLDPWD not set\n", 30);
+			g_last_exit = 1;
+			return (1);
+		}
+		printf("%s\n", val);
+		*target_out = val;
+		return (0);
+	}
+	return (-1);
+}
+
+static int	get_cd_target(char **args, t_envlist *env, char **target_out)
+{
+	int	argc;
+	int	special_case_status;
+
+	argc = 0;
+	while (args[argc])
+		argc++;
+	if (argc > 2)
+	{
+		write(2, "minishell: cd: too many arguments\n", 35);
+		g_last_exit = 1;
+		return (1);
+	}
+	special_case_status = handle_cd_special_cases(args[1], env, target_out);
+	if (special_case_status != -1)
+		return (special_case_status);
+	if (args[1] && ft_strcmp(args[1], "") == 0)
+	{
+		g_last_exit = 0;
+		return (2);
+	}
+	*target_out = args[1];
+	return (0);
+}
+
+static int	perform_chdir(char *target_path, t_envlist *env)
 {
 	char	*oldpwd_val;
-	char	*target_path;
 	int		status;
 
 	oldpwd_val = getcwd(NULL, 0);
@@ -100,17 +110,6 @@ int	builtin_cd(char **args, t_envlist *env)
 		perror("minishell: cd: getcwd");
 		g_last_exit = 1;
 		return (1);
-	}
-	status = get_cd_target(args, env, &target_path);
-	if (status == 1)
-	{
-		free(oldpwd_val);
-		return (1);
-	}
-	if (status == 2)
-	{
-		free(oldpwd_val);
-		return (0);
 	}
 	if (chdir(target_path) != 0)
 	{
@@ -123,4 +122,17 @@ int	builtin_cd(char **args, t_envlist *env)
 	free(oldpwd_val);
 	g_last_exit = status;
 	return (status);
+}
+
+int	builtin_cd(char **args, t_envlist *env)
+{
+	char	*target_path;
+	int		status;
+
+	status = get_cd_target(args, env, &target_path);
+	if (status == 1)
+		return (1);
+	if (status == 2)
+		return (0);
+	return (perform_chdir(target_path, env));
 }

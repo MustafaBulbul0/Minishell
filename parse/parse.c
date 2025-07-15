@@ -1,6 +1,11 @@
 #include "./../minishell.h"
 
-t_cmd	*create_cmd(void)
+static t_cmd		*create_cmd(void);
+static t_token		*handle_redirections(t_token *token, t_cmd *cmd);
+static int			count_words_in_segment(t_token *token);
+static t_token		*fill_command_from_segment(t_cmd *cmd, t_token *token);
+
+static t_cmd	*create_cmd(void)
 {
 	t_cmd	*cmd;
 
@@ -14,7 +19,7 @@ t_cmd	*create_cmd(void)
 	return (cmd);
 }
 
-t_redirection	*create_redirection(void)
+static t_redirection	*create_redirection(void)
 {
 	t_redirection	*redir;
 
@@ -32,22 +37,26 @@ static t_token	*handle_redirections(t_token *token, t_cmd *cmd)
 {
 	t_redirection	*redir;
 	t_redirection	*tmp;
+	t_token_type	redir_type;
 
+	if (token == NULL || token->next == NULL || token->next->type != T_WORD)
+	{
+		if (token)
+			return (token->next);
+		return (NULL);
+	}
 	redir = create_redirection();
 	if (redir == NULL)
 		return (NULL);
-	if ((token->type == T_REDIR_IN || token->type == T_HEREDOC)
-		&& token->next != NULL && token->next->type == T_WORD)
-	{
-		token = token->next;
+	redir_type = token->type;
+	token = token->next;
+	if (redir_type == T_REDIR_IN || redir_type == T_HEREDOC)
 		redir->infile = ft_strdup(token->str);
-	}
-	else if ((token->type == T_REDIR_OUT || token->type == T_APPEND)
-		&& token->next != NULL && token->next->type == T_WORD)
+	else if (redir_type == T_REDIR_OUT || redir_type == T_APPEND)
 	{
-		token = token->next;
 		redir->outfile = ft_strdup(token->str);
-		redir->append = (token->type == T_APPEND);
+		if (redir_type == T_APPEND)
+			redir->append = 1;
 	}
 	if (cmd->redirections == NULL)
 		cmd->redirections = redir;
@@ -61,94 +70,83 @@ static t_token	*handle_redirections(t_token *token, t_cmd *cmd)
 	return (token->next);
 }
 
-static int	count_t_token(t_token *token)
+static int	count_words_in_segment(t_token *token)
 {
 	int	count;
 
 	count = 0;
-	while (token != NULL && token->type == T_WORD)
+	while (token && token->type != T_PIPE)
 	{
-		count++;
+		if (token->type == T_WORD)
+			count++;
+		else if (token->type >= T_REDIR_OUT && token->type <= T_HEREDOC)
+		{
+			if (token->next)
+				token = token->next;
+		}
 		token = token->next;
 	}
 	return (count);
 }
 
-static t_token	*parse_simple_cmd(t_token *token, t_cmd *cmd)
+static t_token	*fill_command_from_segment(t_cmd *cmd, t_token *token)
 {
 	int		i;
-	int		arg_count;
+	int		word_count;
+	t_token	*segment_start;
 
-	arg_count = count_t_token(token);
-	cmd->args = malloc(sizeof(char *) * (arg_count + 1));
-	if (cmd->args == NULL)
+	segment_start = token;
+	word_count = count_words_in_segment(segment_start);
+	cmd->args = malloc(sizeof(char *) * (word_count + 1));
+	if (!cmd->args)
 		return (NULL);
 	i = 0;
-	while (i < arg_count)
+	while (token && token->type != T_PIPE)
 	{
-		cmd->args[i] = ft_strdup(token->str);
-		token = token->next;
-		i++;
+		if (token->type == T_WORD)
+		{
+			cmd->args[i++] = ft_strdup(token->str);
+			token = token->next;
+		}
+		else if (token->type >= T_REDIR_OUT && token->type <= T_HEREDOC)
+			token = handle_redirections(token, cmd);
+		else
+			token = token->next;
 	}
 	cmd->args[i] = NULL;
-	if (arg_count > 0)
+	if (cmd->args[0])
 		cmd->cmd = ft_strdup(cmd->args[0]);
 	return (token);
 }
 
 t_cmd	*parse_commands(t_token *tokens)
 {
-	t_cmd	*cmd_list;
+	t_cmd	*head;
 	t_cmd	*current;
-	t_cmd	*tmp;
-	t_cmd	*prev;
-	t_token	*token;
+	t_token	*token_ptr;
 
-	if (tokens == NULL)
-		return (NULL);
-	cmd_list = create_cmd();
-	current = cmd_list;
-	token = tokens;
-	while (token != NULL)
+	head = NULL;
+	current = NULL;
+	token_ptr = tokens;
+	while (token_ptr)
 	{
-		if (token->type == T_WORD)
-			token = parse_simple_cmd(token, current);
-		else if (token->type == T_REDIR_IN || token->type == T_REDIR_OUT
-			|| token->type == T_APPEND || token->type == T_HEREDOC)
-			token = handle_redirections(token, current);
-		else if (token->type == T_PIPE)
+		if (!head)
+		{
+			head = create_cmd();
+			current = head;
+		}
+		else
 		{
 			current->next = create_cmd();
 			current = current->next;
-			token = token->next;
 		}
-		else
-			token = token->next;
+		if (!current)
+			return (free_commands(head), NULL);
+		token_ptr = fill_command_from_segment(current, token_ptr);
+		if (!current->args)
+			return (free_commands(head), NULL);
+		if (token_ptr && token_ptr->type == T_PIPE)
+			token_ptr = token_ptr->next;
 	}
-	tmp = cmd_list;
-	prev = NULL;
-	while (tmp != NULL)
-	{
-		if (tmp->cmd == NULL && tmp->redirections == NULL)
-		{
-			if (prev != NULL)
-			{
-				prev->next = tmp->next;
-				free(tmp);
-				tmp = prev->next;
-			}
-			else
-			{
-				cmd_list = tmp->next;
-				free(tmp);
-				tmp = cmd_list;
-			}
-		}
-		else
-		{
-			prev = tmp;
-			tmp = tmp->next;
-		}
-	}
-	return (cmd_list);
+	return (head);
 }

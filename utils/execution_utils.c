@@ -1,42 +1,5 @@
 # include "../minishell.h"
 
-void	handle_redirections_fd(t_cmd *cmd)
-{
-	t_redirection	*redir;
-	int				fd;
-
-	redir = cmd->redirections;
-	while (redir)
-	{
-		if (redir->infile)
-		{
-			fd = open(redir->infile, O_RDONLY);
-			if (fd < 0)
-			{
-				perror(redir->infile);
-				exit(1);
-			}
-			dup2(fd, STDIN_FILENO);
-			close(fd);
-		}
-		if (redir->outfile)
-		{
-			if (redir->append)
-				fd = open(redir->outfile, O_WRONLY | O_CREAT | O_APPEND);
-			else
-				fd = open(redir->outfile, O_WRONLY | O_CREAT | O_TRUNC);
-			if (fd < 0)
-			{
-				perror(redir->outfile);
-				exit(1);
-			}
-			dup2(fd, STDOUT_FILENO);
-			close(fd);
-		}
-		redir = redir->next;
-	}
-}
-
 int	is_builtin(t_cmd *cmd)
 {
 	if (!cmd || !cmd->cmd)

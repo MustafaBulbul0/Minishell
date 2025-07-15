@@ -1,38 +1,49 @@
 #include "./../minishell.h"
 
+static void	free_args(char **args)
+{
+	int	i;
+
+	if (!args)
+		return ;
+	i = 0;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
+}
+
+static void	free_redirections(t_redirection *redirs)
+{
+	t_redirection	*tmp;
+
+	while (redirs)
+	{
+		tmp = redirs;
+		redirs = redirs->next;
+		if (tmp->infile)
+			free(tmp->infile);
+		if (tmp->outfile)
+			free(tmp->outfile);
+		free(tmp);
+	}
+}
+
 void	free_commands(t_cmd *cmd_list)
 {
-	t_cmd			*tmp_cmd;
-	t_redirection	*tmp_redir;
-	int				i;
+	t_cmd	*tmp;
 
-	while (cmd_list != NULL)
+	while (cmd_list)
 	{
-		if (cmd_list->cmd != NULL)
-			free(cmd_list->cmd);
-		i = 0;
-		if (cmd_list->args != NULL)
-		{
-			while (cmd_list->args[i] != NULL)
-			{
-				free(cmd_list->args[i]);
-				i++;
-			}
-			free(cmd_list->args);
-		}
-		while (cmd_list->redirections != NULL)
-		{
-			tmp_redir = cmd_list->redirections;
-			if (tmp_redir->infile != NULL)
-				free(tmp_redir->infile);
-			if (tmp_redir->outfile != NULL)
-				free(tmp_redir->outfile);
-			cmd_list->redirections = tmp_redir->next;
-			free(tmp_redir);
-		}
-		tmp_cmd = cmd_list;
+		tmp = cmd_list;
 		cmd_list = cmd_list->next;
-		free(tmp_cmd);
+		if (tmp->cmd)
+			free(tmp->cmd);
+		free_args(tmp->args);
+		free_redirections(tmp->redirections);
+		free(tmp);
 	}
 }
 

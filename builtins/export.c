@@ -1,15 +1,13 @@
 #include "../minishell.h"
 
-void	free_envlist(t_envlist *list);
+void		free_envlist(t_envlist *list);
 
 static int	is_valid_env_key(const char *key)
 {
 	if (!key || *key == '\0')
 		return (0);
-
 	if (!ft_isalpha(*key) && *key != '_')
 		return (0);
-
 	key++;
 	while (*key)
 	{
@@ -50,6 +48,20 @@ static t_envlist	*create_new_env_node(t_envlist *node)
 	return (new);
 }
 
+static void	update_node_value(t_envlist *target, t_envlist *source)
+{
+	if (source->eq)
+	{
+		if (target->value)
+			free(target->value);
+		if (source->value)
+			target->value = ft_strdup(source->value);
+		else
+			target->value = NULL;
+	}
+	target->eq = source->eq;
+}
+
 static void	add_or_update_env(t_envlist *env, t_envlist *node)
 {
 	t_envlist	*curr;
@@ -60,16 +72,7 @@ static void	add_or_update_env(t_envlist *env, t_envlist *node)
 	{
 		if (ft_strcmp(curr->key, node->key) == 0)
 		{
-			if (node->eq)
-			{
-				if (curr->value)
-					free(curr->value);
-				if (node->value)
-					curr->value = ft_strdup(node->value);
-				else
-					curr->value = NULL;
-			}
-			curr->eq = node->eq;
+			update_node_value(curr, node);
 			return ;
 		}
 		if (!curr->next)
@@ -82,6 +85,13 @@ static void	add_or_update_env(t_envlist *env, t_envlist *node)
 	curr->next = new;
 }
 
+static void	parse_with_equal(t_envlist *node, const char *s, char *eq_pos)
+{
+	node->key = ft_substr(s, 0, eq_pos - s);
+	node->value = ft_strdup(eq_pos + 1);
+	node->eq = 1;
+}
+
 static t_envlist	*parse_env_string_to_node(const char *s)
 {
 	t_envlist	*node;
@@ -92,11 +102,7 @@ static t_envlist	*parse_env_string_to_node(const char *s)
 		return (NULL);
 	eq_pos = ft_strchr(s, '=');
 	if (eq_pos)
-	{
-		node->key = ft_substr(s, 0, eq_pos - s);
-		node->value = ft_strdup(eq_pos + 1);
-		node->eq = 1;
-	}
+		parse_with_equal(node, s, eq_pos);
 	else
 	{
 		node->key = ft_strdup(s);
@@ -105,16 +111,14 @@ static t_envlist	*parse_env_string_to_node(const char *s)
 	}
 	if (!node->key || (eq_pos && !node->value))
 	{
-		free(node->key);
-		free(node->value);
-		free(node);
+		free_envlist(node);
 		return (NULL);
 	}
 	node->next = NULL;
 	return (node);
 }
 
-static int	handle_single_export_argument(t_envlist *env, const char *arg_str)
+static int	handle_single_export_arg(t_envlist *env, const char *arg_str)
 {
 	t_envlist	*temp_node;
 	int			ret;
@@ -122,7 +126,6 @@ static int	handle_single_export_argument(t_envlist *env, const char *arg_str)
 	temp_node = parse_env_string_to_node(arg_str);
 	if (!temp_node)
 		return (1);
-
 	ret = 0;
 	if (!is_valid_env_key(temp_node->key))
 	{
@@ -132,9 +135,7 @@ static int	handle_single_export_argument(t_envlist *env, const char *arg_str)
 		ret = 1;
 	}
 	else
-	{
 		add_or_update_env(env, temp_node);
-	}
 	free_envlist(temp_node);
 	return (ret);
 }
@@ -155,7 +156,7 @@ void	ft_export(t_envlist *env, char **arg)
 	}
 	while (arg[i])
 	{
-		if (handle_single_export_argument(env, arg[i]))
+		if (handle_single_export_arg(env, arg[i]))
 			has_error = 1;
 		i++;
 	}

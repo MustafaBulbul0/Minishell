@@ -15,7 +15,7 @@ typedef struct s_cmd t_cmd;
 void	write_line(t_cmd *command);
 void	print_location(void);
 void	ft_envp(t_envlist *env);
-void	exit_program(t_cmd *commands);
+void	exit_program(t_cmd *commands, int is_child);
 int		builtin_cd(char **envp, t_envlist *env);
 void	ft_unset(t_envlist *list, char **arg);
 void	ft_export(t_envlist	*env, char **arg);

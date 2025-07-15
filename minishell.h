@@ -41,6 +41,7 @@ typedef struct s_token
 {
 	char			*str;
 	t_token_type	type;
+	int				quote_type;
 	struct s_token	*next;
 }	t_token;
 
@@ -57,8 +58,6 @@ typedef struct	s_cmd
 	char			*cmd;
 	char			**args;
 	t_redirection	*redirections;
-//	int				is_interactive;   // Yeni: Kabuğun interaktif olup olmadığını belirtir
-//	int				is_piped_command; // Yeni: Komutun bir pipe'ın parçası olup olmadığını belirtir
 	struct s_cmd	*next;
 }	t_cmd;
 
@@ -83,7 +82,6 @@ void		ft_free_split(char	**arg);
 char		*ft_strjoin_three(char *s1, char *s2, char *s3);
 char		**envlist_to_array(t_envlist *env);
 char		*expand_variable(char *str, t_envlist *env);
-void		handle_redirections_fd(t_cmd *cmd);
 int			is_builtin(t_cmd *cmd);
 
 char		*get_exec_path(char *cmd);
