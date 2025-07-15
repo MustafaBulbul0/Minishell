@@ -2,7 +2,7 @@
 
 static void	remove_node(t_envlist **list, char *key);
 
-void	ft_unset(t_envlist *list, char **arg)
+void	builtin_unset(t_envlist *list, char **arg)
 {
 	int		i;
 

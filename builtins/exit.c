@@ -39,7 +39,7 @@ static int	get_exit_status(char *arg)
 	return (status);
 }
 
-void	exit_program(t_cmd *commands, int is_child)
+void	builtin_exit(t_cmd *commands, int is_child)
 {
 	int	status;
 	int	argc;

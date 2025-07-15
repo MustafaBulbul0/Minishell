@@ -1,146 +1,9 @@
 #include "../minishell.h"
 
-void		free_envlist(t_envlist *list);
+static void	sort_envlist(t_envlist *list);
+static void	print_export_format(t_envlist *list);
 
-static int	is_valid_env_key(const char *key)
-{
-	if (!key || *key == '\0')
-		return (0);
-	if (!ft_isalpha(*key) && *key != '_')
-		return (0);
-	key++;
-	while (*key)
-	{
-		if (!ft_isalnum(*key) && *key != '_')
-			return (0);
-		key++;
-	}
-	return (1);
-}
-
-static t_envlist	*create_new_env_node(t_envlist *node)
-{
-	t_envlist	*new;
-
-	new = malloc(sizeof(t_envlist));
-	if (!new)
-		return (NULL);
-	new->key = ft_strdup(node->key);
-	if (!new->key)
-	{
-		free(new);
-		return (NULL);
-	}
-	if (node->value)
-	{
-		new->value = ft_strdup(node->value);
-		if (!new->value)
-		{
-			free(new->key);
-			free(new);
-			return (NULL);
-		}
-	}
-	else
-		new->value = NULL;
-	new->eq = node->eq;
-	new->next = NULL;
-	return (new);
-}
-
-static void	update_node_value(t_envlist *target, t_envlist *source)
-{
-	if (source->eq)
-	{
-		if (target->value)
-			free(target->value);
-		if (source->value)
-			target->value = ft_strdup(source->value);
-		else
-			target->value = NULL;
-	}
-	target->eq = source->eq;
-}
-
-static void	add_or_update_env(t_envlist *env, t_envlist *node)
-{
-	t_envlist	*curr;
-	t_envlist	*new;
-
-	curr = env;
-	while (curr)
-	{
-		if (ft_strcmp(curr->key, node->key) == 0)
-		{
-			update_node_value(curr, node);
-			return ;
-		}
-		if (!curr->next)
-			break ;
-		curr = curr->next;
-	}
-	new = create_new_env_node(node);
-	if (!new)
-		return ;
-	curr->next = new;
-}
-
-static void	parse_with_equal(t_envlist *node, const char *s, char *eq_pos)
-{
-	node->key = ft_substr(s, 0, eq_pos - s);
-	node->value = ft_strdup(eq_pos + 1);
-	node->eq = 1;
-}
-
-static t_envlist	*parse_env_string_to_node(const char *s)
-{
-	t_envlist	*node;
-	char		*eq_pos;
-
-	node = malloc(sizeof(t_envlist));
-	if (!node)
-		return (NULL);
-	eq_pos = ft_strchr(s, '=');
-	if (eq_pos)
-		parse_with_equal(node, s, eq_pos);
-	else
-	{
-		node->key = ft_strdup(s);
-		node->value = NULL;
-		node->eq = 0;
-	}
-	if (!node->key || (eq_pos && !node->value))
-	{
-		free_envlist(node);
-		return (NULL);
-	}
-	node->next = NULL;
-	return (node);
-}
-
-static int	handle_single_export_arg(t_envlist *env, const char *arg_str)
-{
-	t_envlist	*temp_node;
-	int			ret;
-
-	temp_node = parse_env_string_to_node(arg_str);
-	if (!temp_node)
-		return (1);
-	ret = 0;
-	if (!is_valid_env_key(temp_node->key))
-	{
-		write(2, "minishell: export: `", 20);
-		write(2, arg_str, ft_strlen(arg_str));
-		write(2, "': not a valid identifier\n", 26);
-		ret = 1;
-	}
-	else
-		add_or_update_env(env, temp_node);
-	free_envlist(temp_node);
-	return (ret);
-}
-
-void	ft_export(t_envlist *env, char **arg)
+void	builtin_export(t_envlist *env, char **arg)
 {
 	int	i;
 	int	has_error;
@@ -167,18 +30,52 @@ void	ft_export(t_envlist *env, char **arg)
 	sort_envlist(env);
 }
 
-void	free_envlist(t_envlist *list)
+static void	print_export_format(t_envlist *list)
 {
-	t_envlist	*current;
-	t_envlist	*next;
-
-	current = list;
-	while (current)
+	while (list)
 	{
-		next = current->next;
-		free(current->key);
-		free(current->value);
-		free(current);
-		current = next;
+		printf("declare -x %s", list->key);
+		if (list->value)
+			printf("=\"%s\"", list->value);
+		printf("\n");
+		list = list->next;
+	}
+}
+
+static void	swap_env_content(t_envlist *a, t_envlist *b)
+{
+	char	*tmp_key;
+	char	*tmp_value;
+
+	tmp_key = a->key;
+	tmp_value = a->value;
+	a->key = b->key;
+	a->value = b->value;
+	b->key = tmp_key;
+	b->value = tmp_value;
+}
+
+static void	sort_envlist(t_envlist *list)
+{
+	t_envlist	*curr;
+	t_envlist	*end;
+	int			sorted;
+
+	end = NULL;
+	sorted = 0;
+	while (!sorted)
+	{
+		sorted = 1;
+		curr = list;
+		while (curr && curr->next != end)
+		{
+			if (ft_strcmp(curr->key, curr->next->key) > 0)
+			{
+				swap_env_content(curr, curr->next);
+				sorted = 0;
+			}
+			curr = curr->next;
+		}
+		end = curr;
 	}
 }

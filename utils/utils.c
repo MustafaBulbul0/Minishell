@@ -48,18 +48,6 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (*(unsigned char *)s1 - *(unsigned char *)s2);
 }
 
-int	list_len(t_cmd	*list)
-{
-	int	i;
-
-	i = 0;
-	while (list)
-	{
-		i++;
-		list = list->next;
-	}
-	return (i);
-}
 
 void	ft_free_split(char	**arg)
 {

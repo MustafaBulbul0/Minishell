@@ -4,20 +4,22 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include <fcntl.h>
-# include <string.h>
-# include <signal.h>
+# include <sys/types.h>
 # include <sys/wait.h>
-# include <sys/stat.h>
+# include <signal.h>
+# include <string.h>
 # include <dirent.h>
+# include <errno.h>
 # include <termios.h>
-# include <termcap.h>
-# include <stddef.h>
+# include <term.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "./libft/libft.h"
 # include "./builtins/builtins.h"
-#include <errno.h>
+# include "./execute/execution.h"
+
 
 extern char **environ;
 extern int g_last_exit;
@@ -86,6 +88,5 @@ char		*expand_variable(char *str, t_envlist *env);
 int			is_builtin(t_cmd *cmd);
 
 char		*get_exec_path(char *cmd);
-int			list_len(t_cmd	*list);
 
 #endif

@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-void	ft_envp(t_envlist *env)
+void	builtin_env(t_envlist *env)
 {
 	t_envlist	*temp;
 

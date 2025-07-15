@@ -2,7 +2,7 @@
 
 static int	delete_new_line(t_cmd *command);
 
-void	write_line(t_cmd *command)
+void	builtin_echo(t_cmd *command)
 {
 	int		i;
 	int		temp;

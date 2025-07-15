@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-void	print_location(void)
+void	builtin_pwd(void)
 {
 	char	*path;
 	int		status;
