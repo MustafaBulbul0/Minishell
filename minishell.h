@@ -17,6 +17,7 @@
 # include <readline/history.h>
 # include "./libft/libft.h"
 # include "./builtins/builtins.h"
+#include <errno.h>
 
 extern char **environ;
 extern int g_last_exit;
