@@ -5,15 +5,6 @@ static int	is_operator_char(char c)
 	return (c == '|' || c == '<' || c == '>');
 }
 
-static int	operator_len(const char *s)
-{
-	if ((s[0] == '<' || s[0] == '>') && s[1] == s[0])
-		return (2);
-	if (s[0] == '|' || s[0] == '<' || s[0] == '>')
-		return (1);
-	return (0);
-}
-
 static int	token_len(const char *s)
 {
 	int		i;

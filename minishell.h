@@ -19,6 +19,7 @@
 # include "./libft/libft.h"
 # include "./builtins/builtins.h"
 # include "./execute/execution.h"
+# include "./parse/parse.h"
 
 
 extern char **environ;
@@ -88,5 +89,12 @@ char		*expand_variable(char *str, t_envlist *env);
 int			is_builtin(t_cmd *cmd);
 
 char		*get_exec_path(char *cmd);
+
+t_token		*new_token(char *str, t_token_type type, int quote_type);
+
+char		*strjoin_char(char *s, char c);
+char		*find_var_name(char *str);
+char		*find_value(char *str, t_envlist *env);
+void		parse_execute(char *input, t_envlist *env);
 
 #endif
