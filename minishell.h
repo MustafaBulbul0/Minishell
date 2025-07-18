@@ -21,8 +21,6 @@
 # include "./execute/execution.h"
 # include "./parse/parse.h"
 
-
-extern char **environ;
 extern int g_last_exit;
 
 typedef enum s_token_type
@@ -76,6 +74,7 @@ void		ft_execute(t_envlist *env, t_cmd *command);
 
 void		free_commands(t_cmd *cmd_list);
 void		free_tokens(t_token *tokens);
+void free_env(t_envlist *env);
 
 t_envlist	*envp_init(char *envp[]);
 int			ft_strcmp(const char *s1, const char *s2);

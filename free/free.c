@@ -60,3 +60,21 @@ void	free_tokens(t_token *tokens)
 		free(tmp);
 	}
 }
+
+void free_env(t_envlist *env)
+{
+	t_envlist	*current;
+	t_envlist	*tmp;
+
+	tmp = env;
+	while (tmp)
+	{
+		free(tmp->key);
+		free(tmp->value);
+		free(tmp);
+		tmp = current;
+		if (current)
+			current = tmp->next;
+	}
+	free(tmp);
+}

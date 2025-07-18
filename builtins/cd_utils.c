@@ -11,11 +11,11 @@ static char	*get_env_value(t_envlist *env, const char *key)
 	return (NULL);
 }
 
-static int	handle_cd_home(t_envlist *env, char **target_out)
+static int	handle_cd_home(char **target_out)
 {
 	char	*val;
 
-	val = get_env_value(env, "HOME");
+	val = getenv("HOME");
 	if (!val)
 	{
 		write(2, "minishell: cd: HOME not set\n", 29);
@@ -46,7 +46,7 @@ static int	handle_cd_special_cases(char *arg,
 	t_envlist *env, char **target_out)
 {
 	if (!arg || ft_strcmp(arg, "~") == 0)
-		return (handle_cd_home(env, target_out));
+		return (handle_cd_home(target_out));
 	if (ft_strcmp(arg, "-") == 0)
 		return (handle_cd_oldpwd(env, target_out));
 	return (-1);

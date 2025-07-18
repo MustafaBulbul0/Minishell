@@ -54,11 +54,14 @@ char	**smart_split(const char *input)
 static char	*ft_join(char c, char *result, int *i)
 {
 	char	tmp[2];
+	char	*new_str;
 
 	tmp[0] = c;
 	tmp[1] = 0;
 	(*i)++;
-	return (ft_strjoin(result, tmp));
+	new_str = ft_strjoin(result, tmp);
+	free (result);
+	return (new_str);
 }
 
 char	*merge_and_strip_quotes(const char *s)
