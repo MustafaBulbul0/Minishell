@@ -72,7 +72,7 @@ void	free_env(t_envlist *env)
 		next_node = current->next;
 		free(current->key);
 		if (current->value)
-			free (current);
+			free (current->value);
 		free(current);
 		current = next_node;
 	}
