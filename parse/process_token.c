@@ -33,7 +33,7 @@ static t_redirection	*create_and_assign_redirection(t_token *token,
 	return (redir);
 }
 
-static void	add_redirection_to_cmd(t_cmd *cmd, t_redirection *redir)
+static void	rection_to_cmd(t_cmd *cmd, t_redirection *redir)
 {
 	t_redirection	*tmp;
 
@@ -51,24 +51,36 @@ static void	add_redirection_to_cmd(t_cmd *cmd, t_redirection *redir)
 static t_token	*handle_redirections(t_token *token, t_cmd *cmd)
 {
 	t_redirection	*redir;
-	t_token_type	redir_type;
-	t_token			*original_token;
+	t_redirection	*tmp;
 
-	original_token = token;
-	token = check_redirection_token_validity(token);
-	if (token == NULL)
+	if (token == NULL || token->next == NULL || token->next->type != T_WORD)
 	{
-		if (original_token != NULL)
-			return (original_token->next);
-		else
-			return (NULL);
+		if (token)
+			return (token->next);
+		return (NULL);
 	}
-	redir_type = token->type;
-	token = token->next;
-	redir = create_and_assign_redirection(token, redir_type);
+	redir = create_redirection();
 	if (redir == NULL)
 		return (NULL);
-	add_redirection_to_cmd(cmd, redir);
+	redir->type = token->type;
+	token = token->next;
+	if (redir->type == T_REDIR_IN || redir->type == T_HEREDOC)
+		redir->infile = ft_strdup(token->str);
+	else if (redir->type == T_REDIR_OUT || redir->type == T_APPEND)
+	{
+		redir->outfile = ft_strdup(token->str);
+		if (redir->type == T_APPEND)
+			redir->append = 1;
+	}
+	if (cmd->redirections == NULL)
+		cmd->redirections = redir;
+	else
+	{
+		tmp = cmd->redirections;
+		while (tmp->next != NULL)
+			tmp = tmp->next;
+		tmp->next = redir;
+	}
 	return (token->next);
 }
 

@@ -49,6 +49,7 @@ typedef struct s_token
 
 typedef struct s_redirection
 {
+	t_token_type			type;
 	char					*infile;
 	char					*outfile;
 	int						append;
@@ -95,5 +96,8 @@ char		*strjoin_char(char *s, char c);
 char		*find_var_name(char *str);
 char		*find_value(char *str, t_envlist *env);
 void		parse_execute(char *input, t_envlist *env);
+
+void		execute_builtin(t_cmd *cmd, t_envlist *env, int is_child);
+char	*handle_heredoc(t_redirection *redir, int index);
 
 #endif

@@ -13,7 +13,6 @@ void	signal_handler(int sig)
 
 static int	input_control(char *input)
 {
-
 	if (!input)
 	{
 		printf("exit\n");
@@ -32,7 +31,7 @@ int	main(int argc, char **argv, char **environ)
 	char		*input;
 	t_envlist	*env;
 	int			control;
-	
+
 	g_last_exit = 0;
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);

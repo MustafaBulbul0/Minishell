@@ -61,7 +61,7 @@ void	free_tokens(t_token *tokens)
 	}
 }
 
-void free_env(t_envlist *env)
+void	free_env(t_envlist *env)
 {
 	t_envlist	*current;
 	t_envlist	*tmp;
