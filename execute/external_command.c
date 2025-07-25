@@ -19,7 +19,6 @@ static void	handle_execve_failure(t_cmd *cmd, char *path, char **envp)
 
 static void	handle_path_not_found(char *cmd_name)
 {
-	write(2, "minishell: ", 11);
 	write(2, cmd_name, ft_strlen(cmd_name));
 	write(2, ": command not found\n", 20);
 	exit(127);

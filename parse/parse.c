@@ -54,6 +54,12 @@ t_cmd	*parse_commands(t_token *tokens)
 	t_cmd	*head;
 	t_cmd	*current;
 
+	if (tokens && tokens->type == T_PIPE)
+	{
+		write(2, "minishell: syntax error near unexpected token `|'\n", 50);
+		g_last_exit = 2;
+		return (NULL);
+	}
 	head = NULL;
 	current = NULL;
 	return (parse_commands_loop(tokens, head, current));

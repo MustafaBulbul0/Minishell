@@ -71,7 +71,7 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 	char	**heredoc_files;
 	int		i;
 
-	if (!cmd_list || !cmd_list->cmd)
+	if (!cmd_list)
 		return ;
 	heredoc_files = preprocess_heredocs(cmd_list);
 	if (!heredoc_files && errno != 0)

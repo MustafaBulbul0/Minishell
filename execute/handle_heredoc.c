@@ -27,7 +27,7 @@ char	*handle_heredoc(t_redirection *redir, int index)
 	}
 	while (1)
 	{
-		line = readline("heredoc> ");
+		line = readline("> ");
 		if (!line || ft_strcmp(line, redir->infile) == 0)
 		{
 			free(line);

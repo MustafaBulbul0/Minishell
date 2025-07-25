@@ -64,17 +64,16 @@ void	free_tokens(t_token *tokens)
 void	free_env(t_envlist *env)
 {
 	t_envlist	*current;
-	t_envlist	*tmp;
+	t_envlist	*next_node;
 
-	tmp = env;
-	while (tmp)
+	current = env;
+	while (current)
 	{
-		free(tmp->key);
-		free(tmp->value);
-		free(tmp);
-		tmp = current;
-		if (current)
-			current = tmp->next;
+		next_node = current->next;
+		free(current->key);
+		if (current->value)
+			free (current);
+		free(current);
+		current = next_node;
 	}
-	free(tmp);
 }
