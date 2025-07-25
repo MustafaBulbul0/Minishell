@@ -10,7 +10,7 @@ char	*read_multiline_input(void)
 
 	line = NULL;
 	temp = NULL;
-	input = readline("minishell> ");
+	input = readline("\001\033[1;32m\002minishell> \001\033[0m\002");
 	if (!input)
 		return (NULL);
 	while (unclosed_quotes(input))

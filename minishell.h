@@ -21,22 +21,22 @@
 # include "./execute/execution.h"
 # include "./parse/parse.h"
 
-extern int g_last_exit;
+extern int	g_last_exit;
 
 typedef enum s_token_type
 {
-	T_WORD = 0,			// Genel kelime (komut, argüman, dosya adı)
-	T_PIPE,				// |
-	T_REDIR_OUT,		// >
-	T_REDIR_IN,			// <
-	T_APPEND,			// >>
-	T_HEREDOC,			// <<
-	T_AND,				// &&
-	T_OR,				// ||
-	T_OPEN_PAREN,		// (
-	T_CLOSE_PAREN,		// )
-	T_NEWLINE,			// \n (komut sonu)
-	T_EOF				// End of file/input
+	T_WORD = 0,
+	T_PIPE,
+	T_REDIR_OUT,
+	T_REDIR_IN,
+	T_APPEND,
+	T_HEREDOC,
+	T_AND,
+	T_OR,
+	T_OPEN_PAREN,
+	T_CLOSE_PAREN,
+	T_NEWLINE,
+	T_EOF
 }	t_token_type;
 
 typedef struct s_token
@@ -56,7 +56,7 @@ typedef struct s_redirection
 	struct s_redirection	*next;
 }	t_redirection;
 
-typedef struct	s_cmd
+typedef struct s_cmd
 {
 	char			*cmd;
 	char			**args;
@@ -68,15 +68,12 @@ char		*read_multiline_input(void);
 t_token		*tokenize(char *input);
 char		**smart_split(const char *input);
 char		*merge_and_strip_quotes(const char *s);
-
 void		print_commands(t_cmd *cmd_list);
 t_cmd		*parse_commands(t_token *tokens);
 void		ft_execute(t_envlist *env, t_cmd *command);
-
 void		free_commands(t_cmd *cmd_list);
 void		free_tokens(t_token *tokens);
-void free_env(t_envlist *env);
-
+void		free_env(t_envlist *env);
 t_envlist	*envp_init(char *envp[]);
 int			ft_strcmp(const char *s1, const char *s2);
 char		*ft_strndup(const char *s, size_t n);
@@ -87,17 +84,12 @@ char		*ft_strjoin_three(char *s1, char *s2, char *s3);
 char		**envlist_to_array(t_envlist *env);
 char		*expand_variable(char *str, t_envlist *env);
 int			is_builtin(t_cmd *cmd);
-
 char		*get_exec_path(char *cmd);
-
 t_token		*new_token(char *str, t_token_type type, int quote_type);
-
 char		*strjoin_char(char *s, char c);
 char		*find_var_name(char *str);
 char		*find_value(char *str, t_envlist *env);
 void		parse_execute(char *input, t_envlist *env);
-
 void		execute_builtin(t_cmd *cmd, t_envlist *env, int is_child);
-char	*handle_heredoc(t_redirection *redir, int index);
 
 #endif

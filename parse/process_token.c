@@ -14,74 +14,50 @@ static t_redirection	*create_redirection(void)
 	return (redir);
 }
 
-static t_redirection	*create_and_assign_redirection(t_token *token,
-	t_token_type redir_type)
+static t_token	*get_redirection_info(t_token *token, t_redirection **redir)
 {
-	t_redirection	*redir;
-
-	redir = create_redirection();
-	if (redir == NULL)
+	if (token == NULL || token->next == NULL || token->next->type != T_WORD)
+	{
+		if (token != NULL)
+			return (token->next);
+		else
+			return (NULL);
+	}
+	*redir = create_redirection();
+	if (*redir == NULL)
 		return (NULL);
-	if (redir_type == T_REDIR_IN || redir_type == T_HEREDOC)
-		redir->infile = ft_strdup(token->str);
-	else if (redir_type == T_REDIR_OUT || redir_type == T_APPEND)
+	(*redir)->type = token->type;
+	token = token->next;
+	if ((*redir)->type == T_REDIR_IN || (*redir)->type == T_HEREDOC)
+		(*redir)->infile = ft_strdup(token->str);
+	else if ((*redir)->type == T_REDIR_OUT || (*redir)->type == T_APPEND)
 	{
-		redir->outfile = ft_strdup(token->str);
-		if (redir_type == T_APPEND)
-			redir->append = 1;
+		(*redir)->outfile = ft_strdup(token->str);
+		if ((*redir)->type == T_APPEND)
+			(*redir)->append = 1;
 	}
-	return (redir);
-}
-
-static void	rection_to_cmd(t_cmd *cmd, t_redirection *redir)
-{
-	t_redirection	*tmp;
-
-	if (cmd->redirections == NULL)
-		cmd->redirections = redir;
-	else
-	{
-		tmp = cmd->redirections;
-		while (tmp->next != NULL)
-			tmp = tmp->next;
-		tmp->next = redir;
-	}
+	return (token->next);
 }
 
 static t_token	*handle_redirections(t_token *token, t_cmd *cmd)
 {
-	t_redirection	*redir;
+	t_redirection	*new_redir;
 	t_redirection	*tmp;
+	t_token			*next_token;
 
-	if (token == NULL || token->next == NULL || token->next->type != T_WORD)
-	{
-		if (token)
-			return (token->next);
+	next_token = get_redirection_info(token, &new_redir);
+	if (new_redir == NULL)
 		return (NULL);
-	}
-	redir = create_redirection();
-	if (redir == NULL)
-		return (NULL);
-	redir->type = token->type;
-	token = token->next;
-	if (redir->type == T_REDIR_IN || redir->type == T_HEREDOC)
-		redir->infile = ft_strdup(token->str);
-	else if (redir->type == T_REDIR_OUT || redir->type == T_APPEND)
-	{
-		redir->outfile = ft_strdup(token->str);
-		if (redir->type == T_APPEND)
-			redir->append = 1;
-	}
 	if (cmd->redirections == NULL)
-		cmd->redirections = redir;
+		cmd->redirections = new_redir;
 	else
 	{
 		tmp = cmd->redirections;
 		while (tmp->next != NULL)
 			tmp = tmp->next;
-		tmp->next = redir;
+		tmp->next = new_redir;
 	}
-	return (token->next);
+	return (next_token);
 }
 
 t_token	*process_segment_tokens(t_cmd *cmd, t_token *token, int *i)

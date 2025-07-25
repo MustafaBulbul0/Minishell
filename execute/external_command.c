@@ -32,7 +32,7 @@ static void	handle_directory_command(char *cmd_name)
 	{
 		write(2, "minishell: ", 11);
 		write(2, cmd_name, ft_strlen(cmd_name));
-		write(2, ": is a directory\n", 17);
+		write(2, ": Is a directory\n", 17);
 		exit(126);
 	}
 }

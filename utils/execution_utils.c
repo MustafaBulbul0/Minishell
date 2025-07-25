@@ -20,19 +20,6 @@ void	execute_builtin(t_cmd *cmd, t_envlist *env, int is_child)
 		builtin_export(env, cmd->args);
 }
 
-int	is_builtin(t_cmd *cmd)
-{
-	if (!cmd || !cmd->cmd)
-		return (0);
-	return (ft_strcmp(cmd->cmd, "cd") == 0
-		|| ft_strcmp(cmd->cmd, "echo") == 0
-		|| ft_strcmp(cmd->cmd, "env") == 0
-		|| ft_strcmp(cmd->cmd, "exit") == 0
-		|| ft_strcmp(cmd->cmd, "pwd") == 0
-		|| ft_strcmp(cmd->cmd, "unset") == 0
-		|| ft_strcmp(cmd->cmd, "export") == 0);
-}
-
 static int	count_env_nodes(t_envlist *env)
 {
 	int			count;

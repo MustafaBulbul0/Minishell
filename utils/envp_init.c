@@ -66,3 +66,16 @@ static void	add_node(t_envlist **list, t_envlist *new_node)
 		current = current->next;
 	current->next = new_node;
 }
+
+int	is_builtin(t_cmd *cmd)
+{
+	if (!cmd || !cmd->cmd)
+		return (0);
+	return (ft_strcmp(cmd->cmd, "cd") == 0
+		|| ft_strcmp(cmd->cmd, "echo") == 0
+		|| ft_strcmp(cmd->cmd, "env") == 0
+		|| ft_strcmp(cmd->cmd, "exit") == 0
+		|| ft_strcmp(cmd->cmd, "pwd") == 0
+		|| ft_strcmp(cmd->cmd, "unset") == 0
+		|| ft_strcmp(cmd->cmd, "export") == 0);
+}
