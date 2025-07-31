@@ -83,23 +83,14 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 	char	**heredoc_files;
 
 	if (!cmd_list)
-	{
 		return ;
-	}
 	heredoc_files = preprocess_heredocs(cmd_list);
-	if (!heredoc_files && errno != 0)
-	{
-		g_last_exit = 1;
+	if (!heredoc_files)
 		return ;
-	}
 	if (list_len(cmd_list) == 1 && is_builtin(cmd_list)
 		&& should_run_parent_builtin(cmd_list))
-	{
 		execute_builtin(cmd_list, env, 0);
-	}
 	else
-	{
 		execute_pipeline(cmd_list, env);
-	}
 	cleanup_heredoc_files(heredoc_files);
 }

@@ -11,11 +11,36 @@ static char	*generate_tmp_filename(int index)
 	return (filename);
 }
 
+static void	run_heredoc_child(t_redirection *redir, int fd)
+{
+	char	*line;
+
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_IGN);
+	while (1)
+	{
+		line = readline("> ");
+		if (!line || ft_strcmp(line, redir->infile) == 0)
+		{
+			if (line)
+				free(line);
+			break ;
+		}
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
+	}
+	close(fd);
+	exit(0);
+}
+
 static char	*handle_heredoc(t_redirection *redir, int index)
 {
 	int		fd;
-	char	*line;
 	char	*tmp_filename;
+	pid_t	pid;
+	int		status;
+	void	(*original_sigint_handler)(int);
 
 	tmp_filename = generate_tmp_filename(index);
 	fd = open(tmp_filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
@@ -25,18 +50,21 @@ static char	*handle_heredoc(t_redirection *redir, int index)
 		free(tmp_filename);
 		return (NULL);
 	}
-	while (1)
-	{
-		line = readline("> ");
-		if (!line || ft_strcmp(line, redir->infile) == 0)
-			free(line);
-		if (!line || ft_strcmp(line, redir->infile) == 0)
-			break ;
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
-		free(line);
-	}
+	original_sigint_handler = signal(SIGINT, SIG_IGN);
+	pid = fork();
+	if (pid == 0)
+		run_heredoc_child(redir, fd);
 	close(fd);
+	waitpid(pid, &status, 0);
+	signal(SIGINT, original_sigint_handler);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
+		g_last_exit = 130;
+		write(STDOUT_FILENO, "\n", 1);
+		unlink(tmp_filename);
+		free(tmp_filename);
+		return (NULL);
+	}
 	return (tmp_filename);
 }
 
