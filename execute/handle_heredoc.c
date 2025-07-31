@@ -34,13 +34,29 @@ static void	run_heredoc_child(t_redirection *redir, int fd)
 	exit(0);
 }
 
+static char	*wait_for_heredoc(pid_t pid, char *tmp_filename)
+{
+	int	status;
+
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
+		g_last_exit = 130;
+		write(STDOUT_FILENO, "\n", 1);
+		unlink(tmp_filename);
+		free(tmp_filename);
+		return (NULL);
+	}
+	return (tmp_filename);
+}
+
 static char	*handle_heredoc(t_redirection *redir, int index)
 {
 	int		fd;
 	char	*tmp_filename;
 	pid_t	pid;
-	int		status;
 	void	(*original_sigint_handler)(int);
+	char	*result;
 
 	tmp_filename = generate_tmp_filename(index);
 	fd = open(tmp_filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
@@ -55,17 +71,9 @@ static char	*handle_heredoc(t_redirection *redir, int index)
 	if (pid == 0)
 		run_heredoc_child(redir, fd);
 	close(fd);
-	waitpid(pid, &status, 0);
+	result = wait_for_heredoc(pid, tmp_filename);
 	signal(SIGINT, original_sigint_handler);
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-	{
-		g_last_exit = 130;
-		write(STDOUT_FILENO, "\n", 1);
-		unlink(tmp_filename);
-		free(tmp_filename);
-		return (NULL);
-	}
-	return (tmp_filename);
+	return (result);
 }
 
 char	**process_heredocs_in_cmd(t_cmd *curr_cmd, char **tmp_files, int *i)
