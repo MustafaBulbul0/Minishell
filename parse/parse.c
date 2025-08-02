@@ -1,5 +1,18 @@
 #include "./../minishell.h"
 
+int	check_syntax(t_token *tokens)
+{
+	if (check_first_token_syntax(tokens))
+	{
+		return (1);
+	}
+	if (check_middle_tokens_syntax(tokens))
+	{
+		return (1);
+	}
+	return (0);
+}
+
 static t_cmd	*create_cmd(void)
 {
 	t_cmd	*cmd;
@@ -54,12 +67,6 @@ t_cmd	*parse_commands(t_token *tokens)
 	t_cmd	*head;
 	t_cmd	*current;
 
-	if (tokens && tokens->type == T_PIPE)
-	{
-		write(2, "minishell: syntax error near unexpected token `|'\n", 50);
-		g_last_exit = 2;
-		return (NULL);
-	}
 	head = NULL;
 	current = NULL;
 	return (parse_commands_loop(tokens, head, current));

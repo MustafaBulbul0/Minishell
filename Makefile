@@ -5,7 +5,8 @@ OBJDIR = OBJ
 
 SRCS = main.c \
 	parse/read_line.c parse/parse.c parse/tokenize.c parse/tokenize_utils.c \
-	parse/fill_command.c parse/process_token.c parse/parse_execute.c parse/expand_variable.c \
+	parse/fill_command.c parse/process_token.c parse/parse_execute.c \
+	parse/syntax_error.c parse/expand_variable.c \
 	execute/execution.c execute/execute_pipe.c execute/handle_heredoc.c \
 	execute/external_command.c execute/handle_redirection.c builtins/cd_utils.c \
 	builtins/cd.c builtins/echo.c builtins/export_utils_1.c builtins/export_utils_2.c \

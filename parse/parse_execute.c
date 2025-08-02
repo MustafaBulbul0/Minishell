@@ -77,6 +77,11 @@ void	parse_execute(char *input, t_envlist *env)
 	tokens = tokenize(input);
 	if (!tokens)
 		return ;
+	if (check_syntax(tokens))
+	{
+		free_tokens(tokens);
+		return ;
+	}
 	process_tokens(&tokens, env);
 	commands = parse_commands(tokens);
 	if (commands)
