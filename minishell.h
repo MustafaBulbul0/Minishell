@@ -91,5 +91,6 @@ char		*find_var_name(char *str);
 char		*find_value(char *str, t_envlist *env);
 void		parse_execute(char *input, t_envlist *env);
 void		execute_builtin(t_cmd *cmd, t_envlist *env, int is_child);
+char		*expand_tilde(char *str, t_envlist *env);
 
 #endif

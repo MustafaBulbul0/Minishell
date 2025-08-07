@@ -1,31 +1,5 @@
 #include "./../minishell.h"
 
-static char	*expand_tilde(char *str, t_envlist *env)
-{
-	char	*home_path;
-	char	*expanded_path;
-
-	if (str[0] != '~')
-		return (ft_strdup(str));
-	home_path = find_value("HOME", env);
-	if (!home_path)
-	{
-		if (ft_strcmp(str, "~") == 0)
-			return (ft_strdup("~"));
-		else
-			return (ft_strdup(str));
-	}
-	if (ft_strcmp(str, "~") == 0)
-	{
-		expanded_path = ft_strdup(home_path);
-		free(home_path);
-		return (expanded_path);
-	}
-	expanded_path = ft_strjoin(home_path, str + 1);
-	free(home_path);
-	return (expanded_path);
-}
-
 static void	perform_expansion_and_stripping(t_token *token, t_envlist *env)
 {
 	char	*temp_str;
