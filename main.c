@@ -17,6 +17,7 @@ static int	input_control(char *input)
 	if (!input)
 	{
 		printf("exit\n");
+		g_last_exit = 1;
 		return (1);
 	}
 	else if (!(*input))
@@ -27,7 +28,7 @@ static int	input_control(char *input)
 	return (0);
 }
 
-int	main(int argc, char **argv, char **environ)
+int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
 	t_envlist	*env;
@@ -38,7 +39,7 @@ int	main(int argc, char **argv, char **environ)
 	signal(SIGQUIT, SIG_IGN);
 	(void)argc;
 	(void)argv;
-	env = envp_init(environ);
+	env = envp_init(envp);
 	while (1)
 	{
 		input = read_multiline_input();
