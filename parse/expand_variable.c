@@ -47,11 +47,6 @@ static void	handle_env_var(char **res, char *str, int *i, t_envlist *env)
 	free(var_name);
 }
 
-static int	is_valid_var_start(char c)
-{
-	return (ft_isalpha(c) || c == '_');
-}
-
 char	*expand_variable(char *str, t_envlist *env)
 {
 	int		i;
@@ -65,7 +60,7 @@ char	*expand_variable(char *str, t_envlist *env)
 		{
 			if (str[i + 1] == '?')
 				handle_special_var(&result, &i);
-			else if (is_valid_var_start(str[i + 1]))
+			else if (ft_isalpha(str[i + 1]) || str[i + 1] == '_')
 				handle_env_var(&result, str, &i, env);
 			else
 				result = strjoin_char(result, str[i++]);
@@ -74,4 +69,30 @@ char	*expand_variable(char *str, t_envlist *env)
 			result = strjoin_char(result, str[i++]);
 	}
 	return (result);
+}
+
+char	*expand_tilde(char *str, t_envlist *env)
+{
+	char	*home_path;
+	char	*expanded_path;
+
+	if (str[0] != '~')
+		return (ft_strdup(str));
+	home_path = find_value("HOME", env);
+	if (!home_path)
+	{
+		if (ft_strcmp(str, "~") == 0)
+			return (ft_strdup("~"));
+		else
+			return (ft_strdup(str));
+	}
+	if (ft_strcmp(str, "~") == 0)
+	{
+		expanded_path = ft_strdup(home_path);
+		free(home_path);
+		return (expanded_path);
+	}
+	expanded_path = ft_strjoin(home_path, str + 1);
+	free(home_path);
+	return (expanded_path);
 }

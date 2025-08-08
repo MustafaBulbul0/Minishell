@@ -31,12 +31,6 @@ typedef enum s_token_type
 	T_REDIR_IN,
 	T_APPEND,
 	T_HEREDOC,
-	T_AND,
-	T_OR,
-	T_OPEN_PAREN,
-	T_CLOSE_PAREN,
-	T_NEWLINE,
-	T_EOF
 }	t_token_type;
 
 typedef struct s_token
