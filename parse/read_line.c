@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   read_line.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 12:16:34 by mubulbul          #+#    #+#             */
+/*   Updated: 2025/08/09 16:29:34 by esir             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static int	unclosed_quotes(const char *s);
@@ -6,28 +18,27 @@ char	*read_multiline_input(void)
 {
 	char	*line;
 	char	*temp;
-	char	*input;
+	char	*joined;
 
-	line = NULL;
-	temp = NULL;
-	input = readline("\001\033[1;32m\002minishell> \001\033[0m\002");
-	if (!input)
+	temp = readline("\001\033[1;32m\002minishell> \001\033[0m\002");
+	if (!temp)
 		return (NULL);
-	while (unclosed_quotes(input))
+	while (unclosed_quotes(temp))
 	{
 		line = readline("quote> ");
 		if (!line)
 			break ;
-		temp = input;
-		input = malloc(ft_strlen(temp) + ft_strlen(line) + 2);
-		if (!input)
-			return (NULL);
-		input = ft_strjoin(temp, "\n");
-		input = ft_strjoin(input, line);
+		joined = ft_strjoin(temp, "\n");
 		free(temp);
+		if (!joined)
+			return (NULL);
+		temp = ft_strjoin(joined, line);
+		free(joined);
 		free(line);
+		if (!temp)
+			return (NULL);
 	}
-	return (input);
+	return (temp);
 }
 
 static int	unclosed_quotes(const char *s)

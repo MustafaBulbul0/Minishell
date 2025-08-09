@@ -44,3 +44,12 @@ fclean: clean
 	$(RM) $(NAME)
 
 re: fclean all
+
+leaks: all
+	@valgrind --leak-check=full							\
+			  --suppressions=./readline.supp			\
+			  --show-leak-kinds=all						\
+			  --track-origins=yes						\
+			  --track-fds=yes							\
+			  --verbose									\
+			  ./$(NAME)

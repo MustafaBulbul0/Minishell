@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 12:15:48 by mubulbul          #+#    #+#             */
+/*   Updated: 2025/08/09 15:09:20 by mubulbul         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./../minishell.h"
 
 static int	list_len(t_cmd *list)
@@ -87,10 +99,14 @@ void	ft_execute(t_envlist *env, t_cmd *cmd_list)
 	heredoc_files = preprocess_heredocs(cmd_list);
 	if (!heredoc_files)
 		return ;
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	if (list_len(cmd_list) == 1 && is_builtin(cmd_list)
 		&& should_run_parent_builtin(cmd_list))
 		execute_builtin(cmd_list, env, 0);
 	else
 		execute_pipeline(cmd_list, env);
+	signal(SIGINT, signal_handler);
+	signal(SIGQUIT, SIG_IGN);
 	cleanup_heredoc_files(heredoc_files);
 }

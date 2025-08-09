@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   external_command.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 12:15:54 by mubulbul          #+#    #+#             */
+/*   Updated: 2025/08/09 16:00:04 by esir             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./../minishell.h"
 
 static void	handle_execve_failure(t_cmd *cmd, char *path, char **envp)
@@ -50,7 +62,7 @@ void	execute_external_command(t_cmd *cmd, t_envlist *env)
 		path = ft_strdup(cmd->cmd);
 	}
 	else
-		path = get_exec_path(cmd->cmd);
+		path = get_exec_path(cmd->cmd, env);
 	if (!path)
 	{
 		handle_path_not_found(cmd->cmd);

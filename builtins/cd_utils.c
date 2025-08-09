@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd_utils.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 12:13:53 by mubulbul          #+#    #+#             */
+/*   Updated: 2025/08/09 17:32:17 by esir             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-static char	*get_env_value(t_envlist *env, const char *key)
+char	*get_env_value(t_envlist *env, const char *key)
 {
 	while (env)
 	{
@@ -11,11 +23,11 @@ static char	*get_env_value(t_envlist *env, const char *key)
 	return (NULL);
 }
 
-static int	handle_cd_home(char **target_out)
+static int	handle_cd_home(char **target_out, t_envlist *env)
 {
 	char	*val;
 
-	val = getenv("HOME");
+	val = get_env_value(env, "HOME");
 	if (!val)
 	{
 		write(2, "minishell: cd: HOME not set\n", 29);
@@ -45,8 +57,8 @@ static int	handle_cd_oldpwd(t_envlist *env, char **target_out)
 static int	handle_cd_special_cases(char *arg,
 	t_envlist *env, char **target_out)
 {
-	if (!arg || ft_strcmp(arg, "~") == 0)
-		return (handle_cd_home(target_out));
+	if (!arg)
+		return (handle_cd_home(target_out, env));
 	if (ft_strcmp(arg, "-") == 0)
 		return (handle_cd_oldpwd(env, target_out));
 	return (-1);

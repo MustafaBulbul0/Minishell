@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
+/*   Updated: 2025/08/09 16:01:10 by esir             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -78,7 +90,7 @@ char		*ft_strjoin_three(char *s1, char *s2, char *s3);
 char		**envlist_to_array(t_envlist *env);
 char		*expand_variable(char *str, t_envlist *env);
 int			is_builtin(t_cmd *cmd);
-char		*get_exec_path(char *cmd);
+char		*get_exec_path(char *cmd, t_envlist *env);
 t_token		*new_token(char *str, t_token_type type, int quote_type);
 char		*strjoin_char(char *s, char c);
 char		*find_var_name(char *str);
@@ -86,5 +98,7 @@ char		*find_value(char *str, t_envlist *env);
 void		parse_execute(char *input, t_envlist *env);
 void		execute_builtin(t_cmd *cmd, t_envlist *env, int is_child);
 char		*expand_tilde(char *str, t_envlist *env);
+void		signal_handler(int sig);
+int			get_last_process_status(pid_t last_pid);
 
 #endif

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   access_path.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 12:17:40 by mubulbul          #+#    #+#             */
+/*   Updated: 2025/08/09 16:10:29 by esir             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static char	*search_path_in_env(char **paths, char *cmd)
@@ -19,7 +31,7 @@ static char	*search_path_in_env(char **paths, char *cmd)
 	return (NULL);
 }
 
-char	*get_exec_path(char *cmd)
+char	*get_exec_path(char *cmd, t_envlist *env)
 {
 	char	*path_env;
 	char	**paths;
@@ -33,7 +45,7 @@ char	*get_exec_path(char *cmd)
 			return (ft_strdup(cmd));
 		return (NULL);
 	}
-	path_env = getenv("PATH");
+	path_env = get_env_value(env, "PATH");
 	if (!path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');

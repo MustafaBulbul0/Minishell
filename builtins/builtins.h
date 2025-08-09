@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.h                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 12:13:48 by mubulbul          #+#    #+#             */
+/*   Updated: 2025/08/09 16:02:02 by esir             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
@@ -21,5 +33,6 @@ void	builtin_export(t_envlist	*env, char **arg);
 int		get_cd_target(char **args, t_envlist *env, char **target_out);
 int		handle_single_export_arg(t_envlist *env, const char *arg_str);
 void	add_or_update_env(t_envlist *env, t_envlist *node);
+char	*get_env_value(t_envlist *env, const char *key);
 
 #endif
