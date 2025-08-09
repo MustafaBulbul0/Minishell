@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:16:20 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:16:21 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 00:40:01 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,23 +84,26 @@ void	process_tokens(t_token **tokens_head, t_envlist *env)
 	}
 }
 
-void	parse_execute(char *input, t_envlist *env)
+int	parse_execute(char *input, t_envlist *env)
 {
 	t_token	*tokens;
 	t_cmd	*commands;
+	int		should_exit;
 
+	should_exit = PARSE_EXECUTE_OK;
 	tokens = tokenize(input);
 	if (!tokens)
-		return ;
+		return (PARSE_EXECUTE_OK);
 	if (check_syntax(tokens))
 	{
 		free_tokens(tokens);
-		return ;
+		return (PARSE_EXECUTE_OK);
 	}
 	process_tokens(&tokens, env);
 	commands = parse_commands(tokens);
 	if (commands)
-		ft_execute(env, commands);
+		should_exit = ft_execute(env, commands, tokens);
 	free_tokens(tokens);
 	free_commands(commands);
+	return (should_exit);
 }

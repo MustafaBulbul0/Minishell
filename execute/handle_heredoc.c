@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:59 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:16:00 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 00:44:03 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,7 @@ char	**process_heredocs_in_cmd(t_cmd *curr_cmd, char **tmp_files, int *i)
 		{
 			tmp_files[*i] = handle_heredoc(curr_redir, *i);
 			if (!tmp_files[*i])
-			{
-				ft_free_split(tmp_files);
 				return (NULL);
-			}
 			free(curr_redir->infile);
 			curr_redir->infile = ft_strdup(tmp_files[*i]);
 			curr_redir->type = T_REDIR_IN;

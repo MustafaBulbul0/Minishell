@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:18 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:15:19 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 00:36:42 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,15 @@ void	builtin_exit(t_cmd *commands, int is_child)
 	{
 		write(2, "minishell: exit: too many arguments\n", 36);
 		g_last_exit = 1;
+		if (is_child)
+			exit(1);
 		return ;
 	}
 	if (argc == 1)
 		status = g_last_exit;
 	else
 		status = get_exit_status(commands->args[1]);
-	exit(status);
+	g_last_exit = status;
+	if (is_child)
+		exit(status);
 }

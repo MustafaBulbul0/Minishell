@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 16:01:10 by esir             ###   ########.fr       */
+/*   Updated: 2025/08/10 01:33:24 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@
 # include "./builtins/builtins.h"
 # include "./execute/execution.h"
 # include "./parse/parse.h"
+
+# define PARSE_EXECUTE_OK 0
+# define PARSE_EXECUTE_EXIT 1
 
 extern int	g_last_exit;
 
@@ -76,7 +79,7 @@ char		**smart_split(const char *input);
 char		*merge_and_strip_quotes(const char *s);
 void		print_commands(t_cmd *cmd_list);
 t_cmd		*parse_commands(t_token *tokens);
-void		ft_execute(t_envlist *env, t_cmd *command);
+int			ft_execute(t_envlist *env, t_cmd *command, t_token *all_tokens);
 void		free_commands(t_cmd *cmd_list);
 void		free_tokens(t_token *tokens);
 void		free_env(t_envlist *env);
@@ -95,10 +98,12 @@ t_token		*new_token(char *str, t_token_type type, int quote_type);
 char		*strjoin_char(char *s, char c);
 char		*find_var_name(char *str);
 char		*find_value(char *str, t_envlist *env);
-void		parse_execute(char *input, t_envlist *env);
+int			parse_execute(char *input, t_envlist *env);
 void		execute_builtin(t_cmd *cmd, t_envlist *env, int is_child);
 char		*expand_tilde(char *str, t_envlist *env);
 void		signal_handler(int sig);
 int			get_last_process_status(pid_t last_pid);
+void		execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens, char **heredoc_files);
+void		execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens, char **heredoc_files);
 
 #endif

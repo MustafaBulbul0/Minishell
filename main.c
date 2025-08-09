@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:09 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:18:10 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 00:21:07 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int	main(int argc, char **argv, char **envp)
 	char		*input;
 	t_envlist	*env;
 	int			control;
+	int			should_exit;
 
 	g_last_exit = 0;
 	signal(SIGINT, signal_handler);
@@ -61,8 +62,11 @@ int	main(int argc, char **argv, char **envp)
 		if (control == 2)
 			continue ;
 		add_history(input);
+		should_exit = parse_execute(input, env);
 		parse_execute(input, env);
 		free(input);
+		if (should_exit == PARSE_EXECUTE_EXIT)
+			break ;
 	}
 	free_env(env);
 	return (g_last_exit);

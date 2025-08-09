@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:42 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 15:36:25 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 00:48:46 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,22 +52,32 @@ static void	prepare_child_process(t_cmd *cmd, int in_fd, int *pipe_fd)
 }
 
 static void	execute_child_process(t_cmd *cmd, int in_fd,
-		int *pipe_fd, t_envlist *env)
+		int *pipe_fd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens)
 {
+	int status;
+
 	prepare_child_process(cmd, in_fd, pipe_fd);
 	if (handle_redirections_fd(cmd) != 0)
+	{
+		free_commands(all_commands);
+		free_tokens(all_tokens);
+		free_env(env);
 		exit(1);
+	}
 	if (is_builtin(cmd))
 	{
 		execute_builtin(cmd, env, 1);
-		exit(g_last_exit);
+		status = g_last_exit;
+		free_commands(all_commands);
+		free_tokens(all_tokens);
+		free_env(env);
+		exit(status);
 	}
 	else
-		execute_external_command(cmd, env);
-	exit(1);
+		execute_external_command(cmd, env, all_commands, all_tokens);
 }
 
-void	execute_pipeline(t_cmd *cmd, t_envlist *env)
+void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens)
 {
 	int		in_fd;
 	int		pipe_fd[2];
@@ -83,7 +93,7 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env)
 			return ;
 		pid = fork();
 		if (pid == 0)
-			execute_child_process(curr, in_fd, pipe_fd, env);
+			execute_child_process(curr, in_fd, pipe_fd, env, all_commands, all_tokens);
 		close_unused_fds(in_fd, pipe_fd, curr);
 		if (curr->next)
 			in_fd = pipe_fd[0];

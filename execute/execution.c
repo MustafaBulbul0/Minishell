@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:48 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 15:09:20 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 01:29:36 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,22 @@ static int	list_len(t_cmd *list)
 	return (i);
 }
 
+static void	cleanup_heredoc_files(char **heredoc_files)
+{
+	int	i;
+
+	if (heredoc_files)
+	{
+		i = 0;
+		while (heredoc_files[i])
+		{
+			unlink(heredoc_files[i]);
+			i++;
+		}
+		ft_free_split(heredoc_files);
+	}
+}
+
 static char	**preprocess_heredocs(t_cmd *cmd_list)
 {
 	t_cmd	*curr_cmd;
@@ -39,7 +55,11 @@ static char	**preprocess_heredocs(t_cmd *cmd_list)
 	while (curr_cmd)
 	{
 		if (!process_heredocs_in_cmd(curr_cmd, tmp_files, &i))
+		{
+			tmp_files[i] = NULL;
+			cleanup_heredoc_files(tmp_files);
 			return (NULL);
+		}
 		curr_cmd = curr_cmd->next;
 	}
 	tmp_files[i] = NULL;
@@ -74,39 +94,32 @@ static int	should_run_parent_builtin(t_cmd *cmd)
 	}
 }
 
-static void	cleanup_heredoc_files(char **heredoc_files)
-{
-	int	i;
-
-	if (heredoc_files)
-	{
-		i = 0;
-		while (heredoc_files[i])
-		{
-			unlink(heredoc_files[i]);
-			i++;
-		}
-		ft_free_split(heredoc_files);
-	}
-}
-
-void	ft_execute(t_envlist *env, t_cmd *cmd_list)
+int	ft_execute(t_envlist *env, t_cmd *cmd_list, t_token *all_tokens)
 {
 	char	**heredoc_files;
 
 	if (!cmd_list)
-		return ;
+		return (PARSE_EXECUTE_OK);
 	heredoc_files = preprocess_heredocs(cmd_list);
 	if (!heredoc_files)
-		return ;
+		return (PARSE_EXECUTE_OK);
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	if (list_len(cmd_list) == 1 && is_builtin(cmd_list)
 		&& should_run_parent_builtin(cmd_list))
+	{
+		if (ft_strcmp(cmd_list->cmd, "exit") == 0)
+		{
+			execute_builtin(cmd_list, env, 0);
+			cleanup_heredoc_files(heredoc_files);
+			return (PARSE_EXECUTE_EXIT);
+		}
 		execute_builtin(cmd_list, env, 0);
+	}
 	else
-		execute_pipeline(cmd_list, env);
+		execute_pipeline(cmd_list, env, cmd_list, all_tokens);
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
 	cleanup_heredoc_files(heredoc_files);
+	return (PARSE_EXECUTE_OK);
 }
