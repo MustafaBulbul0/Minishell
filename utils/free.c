@@ -6,13 +6,13 @@
 /*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:17:58 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 17:34:06 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/10 21:34:45 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
 
-static void	free_args(char **args)
+void	ft_free_split(char **args)
 {
 	int	i;
 
@@ -53,7 +53,7 @@ void	free_commands(t_cmd *cmd_list)
 		cmd_list = cmd_list->next;
 		if (tmp->cmd)
 			free(tmp->cmd);
-		free_args(tmp->args);
+		ft_free_split(tmp->args);
 		free_redirections(tmp->redirections);
 		free(tmp);
 	}
@@ -89,4 +89,16 @@ void	free_env(t_envlist *env)
 		free(current);
 		current = next_node;
 	}
+}
+
+void	free_all(t_cmd *cmd_list, t_token *tokens, t_envlist *env, t_redirection *redirections)
+{
+	if (cmd_list)
+		free_commands(cmd_list);
+	if (tokens)
+		free_tokens(tokens);
+	if (env)
+		free_env(env);
+	if (redirections)
+		free_redirections(redirections);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 02:02:29 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 21:33:44 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,14 @@ typedef struct s_cmd
 	t_redirection	*redirections;
 	struct s_cmd	*next;
 }	t_cmd;
+
+typedef struct s_all_structs
+{
+	t_cmd			*cmd_list;
+	t_token			*tokens;
+	t_envlist		*env;
+	t_redirection	*redirections;
+}	t_all_structs;
 
 char		*read_multiline_input(void);
 t_token		*tokenize(char *input);

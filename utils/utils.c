@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:06 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:18:07 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 21:29:24 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,19 +58,6 @@ int	ft_strcmp(const char *s1, const char *s2)
 		s2++;
 	}
 	return (*(unsigned char *)s1 - *(unsigned char *)s2);
-}
-
-void	ft_free_split(char	**arg)
-{
-	int	i;
-
-	i = 0;
-	while (arg[i])
-	{
-		free(arg[i]);
-		i++;
-	}
-	free(arg);
 }
 
 char	*ft_strjoin_three(char *s1, char *s2, char *s3)
