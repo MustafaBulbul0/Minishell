@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:09 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 00:21:07 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 07:01:31 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		add_history(input);
 		should_exit = parse_execute(input, env);
-		parse_execute(input, env);
 		free(input);
 		if (should_exit == PARSE_EXECUTE_EXIT)
 			break ;
