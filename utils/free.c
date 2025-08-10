@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:17:58 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 07:06:25 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 17:34:06 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,10 @@ void	free_env(t_envlist *env)
 	while (current)
 	{
 		next_node = current->next;
-		free(current->key);
+		if (current->key)
+			free(current->key);
 		if (current->value)
-			free (current->value);
+			free(current->value);
 		free(current);
 		current = next_node;
 	}

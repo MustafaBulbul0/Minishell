@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:13:57 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:13:58 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 17:18:13 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ static void	update_env_value(t_envlist *env, const char *key, const char *value)
 	{
 		if (ft_strcmp(env->key, key) == 0)
 		{
-			free(env->value);
+			if (env->value)
+				free(env->value);
 			env->value = ft_strdup(value);
 			return ;
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:17:51 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:17:52 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 17:33:37 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,18 +76,22 @@ char	**envlist_to_array(t_envlist *env)
 	arr = allocate_env_array(count);
 	if (!arr)
 		return (NULL);
-	i = -1;
+	i = 0;
 	tmp = env;
 	while (tmp)
 	{
-		arr[++i] = create_env_string(tmp);
+		arr[i] = create_env_string(tmp);
 		if (!arr[i])
 		{
 			while (i > 0)
-				free(arr[--i]);
+			{
+				i--;
+				free(arr[i]);
+			}
 			free(arr);
 			return (NULL);
 		}
+		i++;
 		tmp = tmp->next;
 	}
 	arr[i] = NULL;

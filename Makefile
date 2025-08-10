@@ -17,7 +17,7 @@ SRCS = main.c \
 OBJS = $(patsubst %.c, $(OBJDIR)/%.o, $(SRCS))
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 RM = rm -f
 
 all: $(LIBFT) $(NAME)
