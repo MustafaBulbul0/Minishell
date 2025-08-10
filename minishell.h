@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 01:33:24 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/10 02:02:29 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void		execute_builtin(t_cmd *cmd, t_envlist *env, int is_child);
 char		*expand_tilde(char *str, t_envlist *env);
 void		signal_handler(int sig);
 int			get_last_process_status(pid_t last_pid);
-void		execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens, char **heredoc_files);
-void		execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens, char **heredoc_files);
+void		execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
+void		execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
 
 #endif
