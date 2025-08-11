@@ -6,7 +6,7 @@
 /*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:48 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/11 12:59:49 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/11 13:05:08 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,32 +80,27 @@ static int	has_heredoc(t_cmd *cmd_list)
 
 static char	**preprocess_heredocs(t_cmd *cmd_list)
 {
-	t_cmd			*current_cmd;
-	t_redirection	*current_redir;
-	char			**heredoc_files;
-	int				i;
+	t_cmd	*curr_cmd;
+	char	**tmp_files;
+	int		i;
 
-	heredoc_files = malloc(sizeof(char *) * (list_len(cmd_list) + 1));
-	if (!heredoc_files)
+	tmp_files = malloc(sizeof(char *) * (list_len(cmd_list) * 10 + 1));
+	if (!tmp_files)
 		return (NULL);
 	i = 0;
-	current_cmd = cmd_list;
-	while (current_cmd)
+	curr_cmd = cmd_list;
+	while (curr_cmd)
 	{
-		current_redir = current_cmd->redirections;
-		while (current_redir)
+		if (!process_heredocs_in_cmd(curr_cmd, tmp_files, &i))
 		{
-			if (current_redir->type == T_HEREDOC)
-			{
-				heredoc_files[i] = current_redir->infile;
-				i++;
-			}
-			current_redir = current_redir->next;
+			tmp_files[i] = NULL;
+			cleanup_heredoc_files(tmp_files, cmd_list);
+			return (NULL);
 		}
-		current_cmd = current_cmd->next;
+		curr_cmd = curr_cmd->next;
 	}
-	heredoc_files[i] = NULL;
-	return (heredoc_files);
+	tmp_files[i] = NULL;
+	return (tmp_files);
 }
 
 static int	should_run_parent_builtin(t_cmd *cmd)
