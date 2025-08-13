@@ -6,7 +6,7 @@
 /*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:59 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 22:21:13 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/13 11:50:04 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static char	*generate_tmp_filename(int index)
 	return (filename);
 }
 
-static void	run_heredoc_child(t_redirection *redir, int fd)
+static char	*run_heredoc_child(t_redirection *redir, int fd)
 {
 	char	*line;
 
@@ -43,7 +43,7 @@ static void	run_heredoc_child(t_redirection *redir, int fd)
 		free(line);
 	}
 	close(fd);
-	exit(0);
+	return (NULL);
 }
 
 static char	*wait_for_heredoc(pid_t pid, char *tmp_filename)
@@ -81,10 +81,12 @@ static char	*handle_heredoc(t_redirection *redir, int index)
 	original_sigint_handler = signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid == 0)
-		run_heredoc_child(redir, fd);
+		return (run_heredoc_child(redir, fd));
 	close(fd);
 	result = wait_for_heredoc(pid, tmp_filename);
 	signal(SIGINT, original_sigint_handler);
+	printf("Heredoc file created: %s\n", result);
+	printf("Heredoc file: %d\n", index);
 	return (result);
 }
 
