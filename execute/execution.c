@@ -6,7 +6,7 @@
 /*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:48 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/13 12:34:31 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/13 17:11:35 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ int	ft_execute(t_envlist *env, t_cmd *cmd_list, t_token *all_tokens)
 	{
 		heredoc_files = preprocess_heredocs(cmd_list);
 		if (!heredoc_files)
-			return (PARSE_EXECUTE_OK);
+			return (PARSE_EXECUTE_EXIT);
 	}
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
