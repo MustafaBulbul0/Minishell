@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_token.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:16:30 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:16:31 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/14 21:35:45 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ static t_redirection	*create_redirection(void)
 	redir->infile = NULL;
 	redir->outfile = NULL;
 	redir->append = 0;
+	redir->heredoc_fd = -1;
 	redir->next = NULL;
 	return (redir);
 }

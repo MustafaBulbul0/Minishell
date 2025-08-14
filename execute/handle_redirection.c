@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirection.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:16:03 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:16:04 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/14 23:32:56 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,12 @@ int	handle_redirections_fd(t_cmd *cmd)
 	redir = cmd->redirections;
 	while (redir)
 	{
-		if (redir->infile)
+		if (redir->type == T_HEREDOC)
+		{
+			dup2(redir->heredoc_fd, STDIN_FILENO);
+			close(redir->heredoc_fd);
+		}
+		else if (redir->infile)
 		{
 			ret = handle_infile_redirection(redir);
 			if (ret != 0)

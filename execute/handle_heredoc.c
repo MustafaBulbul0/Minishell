@@ -6,29 +6,41 @@
 /*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:59 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/13 17:47:33 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/14 23:31:13 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
 
-static char	*generate_tmp_filename(int index)
-{
-	char	*index_str;
-	char	*filename;
+static int	wait_for_heredoc_child(pid_t pid);
+static void	handle_heredoc_child(t_redirection *redir, int write_fd,
+				t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
+static int	setup_heredoc(t_redirection *redir, t_envlist *env,
+				t_cmd *all_commands, t_token *all_tokens);
 
-	index_str = ft_itoa(index);
-	filename = ft_strjoin("/tmp/minishell_heredoc_", index_str);
-	free(index_str);
-	return (filename);
+static char	*expand_heredoc_line(char *line, t_envlist *env)
+{
+	char	*expanded_line;
+
+	if (ft_strchr(line, '$'))
+	{
+		expanded_line = expand_variable(line, env);
+		free(line);
+		return (expanded_line);
+	}
+	return (line);
 }
 
-static void	run_heredoc_child(t_redirection *redir, int fd)
+static void	handle_heredoc_child(t_redirection *redir, int write_fd,
+	t_envlist *env, t_cmd *all_commands, t_token *all_tokens)
 {
 	char	*line;
+	int		is_quoted;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_IGN);
+	is_quoted = (ft_strchr(redir->infile, '\'')
+			|| ft_strchr(redir->infile, '"'));
 	while (1)
 	{
 		line = readline("> ");
@@ -38,15 +50,43 @@ static void	run_heredoc_child(t_redirection *redir, int fd)
 				free(line);
 			break ;
 		}
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
+		if (!is_quoted)
+			line = expand_heredoc_line(line, env);
+		write(write_fd, line, ft_strlen(line));
+		write(write_fd, "\n", 1);
 		free(line);
 	}
-	close(fd);
+	close(write_fd);
+	free_commands(all_commands);
+	free_tokens(all_tokens);
+	free_env(env);
 	exit(0);
 }
 
-static char	*wait_for_heredoc(pid_t pid, char *tmp_filename)
+static int	setup_heredoc(t_redirection *redir, t_envlist *env,
+	t_cmd *all_commands, t_token *all_tokens)
+{
+	int		pipe_fd[2];
+	pid_t	pid;
+	int		status;
+
+	if (pipe(pipe_fd) == -1)
+		return (perror("minishell: pipe"), 1);
+	pid = fork();
+	if (pid == -1)
+		return (perror("minishell: fork"), 1);
+	if (pid == 0)
+	{
+		close(pipe_fd[0]);
+		handle_heredoc_child(redir, pipe_fd[1], env, all_commands, all_tokens);
+	}
+	close(pipe_fd[1]);
+	redir->heredoc_fd = pipe_fd[0];
+	status = wait_for_heredoc_child(pid);
+	return (status);
+}
+
+static int	wait_for_heredoc_child(pid_t pid)
 {
 	int	status;
 
@@ -55,60 +95,30 @@ static char	*wait_for_heredoc(pid_t pid, char *tmp_filename)
 	{
 		g_last_exit = 130;
 		write(STDOUT_FILENO, "\n", 1);
-		unlink(tmp_filename);
-		free(tmp_filename);
-		return (NULL);
+		return (1);
 	}
-	return (tmp_filename);
+	return (0);
 }
 
-static char	*handle_heredoc(t_redirection *redir, int index)
+int	preprocess_heredocs(t_cmd *cmd_list, t_envlist *env, t_token *all_tokens)
 {
-	int		fd;
-	char	*tmp_filename;
-	pid_t	pid;
-	void	(*original_sigint_handler)(int);
-	char	*result;
-
-	tmp_filename = generate_tmp_filename(index);
-	fd = open(tmp_filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	if (fd == -1)
-	{
-		perror("minishell: heredoc");
-		free(tmp_filename);
-		return (NULL);
-	}
-	original_sigint_handler = signal(SIGINT, SIG_IGN);
-	pid = fork();
-	if (pid == 0)
-		run_heredoc_child(redir, fd);
-	close(fd);
-	result = wait_for_heredoc(pid, tmp_filename);
-	signal(SIGINT, original_sigint_handler);
-	return (result);
-}
-
-char	**process_heredocs_in_cmd(t_cmd *curr_cmd, char **tmp_files, int *i)
-{
+	t_cmd			*curr_cmd;
 	t_redirection	*curr_redir;
-	char			*old_infile;
 
-	curr_redir = curr_cmd->redirections;
-	while (curr_redir)
+	curr_cmd = cmd_list;
+	while (curr_cmd)
 	{
-		if (curr_redir->type == T_HEREDOC)
+		curr_redir = curr_cmd->redirections;
+		while (curr_redir)
 		{
-			tmp_files[*i] = handle_heredoc(curr_redir, *i);
-			if (!tmp_files[*i])
-				return (NULL);
-			old_infile = curr_redir->infile;
-			if (old_infile)
-				free(old_infile);
-			curr_redir->infile = tmp_files[*i];
-			curr_redir->type = T_REDIR_IN;
-			(*i)++;
+			if (curr_redir->type == T_HEREDOC)
+			{
+				if (setup_heredoc(curr_redir, env, cmd_list, all_tokens) != 0)
+					return (1);
+			}
+			curr_redir = curr_redir->next;
 		}
-		curr_redir = curr_redir->next;
+		curr_cmd = curr_cmd->next;
 	}
-	return (tmp_files);
+	return (0);
 }

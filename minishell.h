@@ -6,7 +6,7 @@
 /*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 21:33:44 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/14 23:13:20 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ typedef struct s_redirection
 	char					*infile;
 	char					*outfile;
 	int						append;
+	int						heredoc_fd;
 	struct s_redirection	*next;
 }	t_redirection;
 
@@ -113,5 +114,6 @@ void		signal_handler(int sig);
 int			get_last_process_status(pid_t last_pid);
 void		execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
 void		execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
+int			preprocess_heredocs(t_cmd *cmd_list, t_envlist *env, t_token *tokens);
 
 #endif

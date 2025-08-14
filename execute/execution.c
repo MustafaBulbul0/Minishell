@@ -6,7 +6,7 @@
 /*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:48 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/11 13:05:08 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/14 23:30:33 by mustafa          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,30 +78,6 @@ static int	has_heredoc(t_cmd *cmd_list)
 	return (0);
 }
 
-static char	**preprocess_heredocs(t_cmd *cmd_list)
-{
-	t_cmd	*curr_cmd;
-	char	**tmp_files;
-	int		i;
-
-	tmp_files = malloc(sizeof(char *) * (list_len(cmd_list) * 10 + 1));
-	if (!tmp_files)
-		return (NULL);
-	i = 0;
-	curr_cmd = cmd_list;
-	while (curr_cmd)
-	{
-		if (!process_heredocs_in_cmd(curr_cmd, tmp_files, &i))
-		{
-			tmp_files[i] = NULL;
-			cleanup_heredoc_files(tmp_files, cmd_list);
-			return (NULL);
-		}
-		curr_cmd = curr_cmd->next;
-	}
-	tmp_files[i] = NULL;
-	return (tmp_files);
-}
 
 static int	should_run_parent_builtin(t_cmd *cmd)
 {
@@ -139,17 +115,10 @@ void	cleanup_redirections(t_redirection *redirections)
 
 int	ft_execute(t_envlist *env, t_cmd *cmd_list, t_token *all_tokens)
 {
-	char	**heredoc_files;
-
-	heredoc_files = NULL;
 	if (!cmd_list)
 		return (PARSE_EXECUTE_OK);
-	if (has_heredoc(cmd_list))
-	{
-		heredoc_files = preprocess_heredocs(cmd_list);
-		if (!heredoc_files)
-			return (PARSE_EXECUTE_OK);
-	}
+	if (preprocess_heredocs(cmd_list, env, all_tokens) != 0)
+		return (PARSE_EXECUTE_OK);
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	if (list_len(cmd_list) == 1 && is_builtin(cmd_list)
@@ -166,7 +135,5 @@ int	ft_execute(t_envlist *env, t_cmd *cmd_list, t_token *all_tokens)
 		execute_pipeline(cmd_list, env, cmd_list, all_tokens);
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
-	if (heredoc_files)
-		cleanup_heredoc_files(heredoc_files, cmd_list);
 	return (PARSE_EXECUTE_OK);
 }
