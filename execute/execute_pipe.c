@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:42 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 15:37:41 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:52:40 by esir             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,10 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 		if (curr->next && pipe(pipe_fd) == -1)
 		{
 			if (pid == -1)
+			{
+				free(all);
 				return ;
+			}
 			break ;
 		}
 		pid = spawn_child_process(curr, in_fd, pipe_fd, all);
@@ -99,4 +102,5 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 		curr = curr->next;
 	}
 	wait_for_children(pid);
+	free(all);
 }
