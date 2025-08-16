@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   read_line.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:16:34 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 16:29:34 by esir             ###   ########.fr       */
+/*   Updated: 2025/08/16 15:17:37 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,16 @@ static int	unclosed_quotes(const char *s);
 
 char	*read_multiline_input(void)
 {
-	char	*line;
 	char	*temp;
-	char	*joined;
 
 	temp = readline("\001\033[1;32m\002minishell> \001\033[0m\002");
 	if (!temp)
 		return (NULL);
-	while (unclosed_quotes(temp))
+	if (unclosed_quotes(temp))
 	{
-		line = readline("quote> ");
-		if (!line)
-			break ;
-		joined = ft_strjoin(temp, "\n");
+		write(2, "minishell: syntax error: unclosed quotes\n", 42);
 		free(temp);
-		if (!joined)
-			return (NULL);
-		temp = ft_strjoin(joined, line);
-		free(joined);
-		free(line);
-		if (!temp)
-			return (NULL);
+		return (ft_strdup(""));
 	}
 	return (temp);
 }

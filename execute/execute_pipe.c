@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:42 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 13:58:25 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:37:41 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,25 +34,8 @@ static void	close_unused_fds(int in_fd, int *pipe_fd, t_cmd *curr)
 	}
 }
 
-static void	prepare_child_process(t_cmd *cmd, int in_fd, int *pipe_fd)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-	if (in_fd != STDIN_FILENO)
-	{
-		dup2(in_fd, STDIN_FILENO);
-		close(in_fd);
-	}
-	if (cmd->next)
-	{
-		close(pipe_fd[0]);
-		dup2(pipe_fd[1], STDOUT_FILENO);
-		close(pipe_fd[1]);
-	}
-}
-
-static void	execute_child_process(t_cmd *cmd, int in_fd, int *pipe_fd,
-		t_all *all_struct)
+static void	execute_child_process(t_cmd *cmd, int in_fd,
+		int *pipe_fd, t_all *all_struct)
 {
 	int	status;
 
@@ -77,6 +60,17 @@ static void	execute_child_process(t_cmd *cmd, int in_fd, int *pipe_fd,
 	}
 }
 
+static pid_t	spawn_child_process(t_cmd *curr, int in_fd, int pipe_fd[2],
+		t_all *all)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == 0)
+		execute_child_process(curr, in_fd, pipe_fd, all);
+	return (pid);
+}
+
 void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 			t_token *all_tokens)
 {
@@ -84,9 +78,12 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 	int		pipe_fd[2];
 	pid_t	pid;
 	t_cmd	*curr;
+	t_all	*all;
 
+	in_fd = STDIN_FILENO;
 	curr = cmd;
 	pid = -1;
+	all = all_struct(all_commands, env, all_tokens);
 	while (curr)
 	{
 		if (curr->next && pipe(pipe_fd) == -1)
@@ -95,11 +92,8 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 				return ;
 			break ;
 		}
-		pid = fork();
-		if (pid == 0)
-			execute_child_process(curr, STDIN_FILENO, pipe_fd,
-				all_struct(all_commands, env, all_tokens));
-		close_unused_fds(STDIN_FILENO, pipe_fd, curr);
+		pid = spawn_child_process(curr, in_fd, pipe_fd, all);
+		close_unused_fds(in_fd, pipe_fd, curr);
 		if (curr->next)
 			in_fd = pipe_fd[0];
 		curr = curr->next;

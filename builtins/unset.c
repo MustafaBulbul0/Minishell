@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:36 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/09 12:15:37 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:11:50 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	builtin_unset(t_envlist *list, char **arg)
 		remove_node(&list, arg[i]);
 		i++;
 	}
+	g_last_exit = 0;
 }
 
 static void	remove_node(t_envlist **list, char *key)

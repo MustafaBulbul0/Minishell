@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 11:37:23 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 14:47:50 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:38:00 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,4 +64,21 @@ void	execute_builtin(t_cmd *cmd, t_envlist *env, int is_child)
 		builtin_unset(env, cmd->args);
 	else if (ft_strcmp(cmd->cmd, "export") == 0)
 		builtin_export(env, cmd->args);
+}
+
+void	prepare_child_process(t_cmd *cmd, int in_fd, int *pipe_fd)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	if (in_fd != STDIN_FILENO)
+	{
+		dup2(in_fd, STDIN_FILENO);
+		close(in_fd);
+	}
+	if (cmd->next)
+	{
+		close(pipe_fd[0]);
+		dup2(pipe_fd[1], STDOUT_FILENO);
+		close(pipe_fd[1]);
+	}
 }
