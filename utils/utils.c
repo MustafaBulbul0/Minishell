@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:06 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 21:29:24 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 12:09:23 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,17 @@ char	*ft_strjoin_three(char *s1, char *s2, char *s3)
 	result = ft_strjoin(temp, s3);
 	free(temp);
 	return (result);
+}
+
+t_all	*all_struct(t_cmd *all_comm, t_envlist *env, t_token *all_tokens)
+{
+	t_all	*all;
+
+	all = malloc(sizeof(t_all));
+	if (!all)
+		return (NULL);
+	all->all_commands = all_comm;
+	all->env = env;
+	all->all_tokens = all_tokens;
+	return (all);
 }

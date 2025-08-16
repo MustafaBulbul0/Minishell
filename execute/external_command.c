@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   external_command.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:54 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 17:32:06 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 13:04:17 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,12 @@ void	execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t
 	int		saved_errno;
 
 	if (!cmd->cmd || !*(cmd->cmd))
+	{
+		free_commands(all_commands);
+		free_tokens(all_tokens);
+		free_env(env);
 		exit(0);
+	}
 	if (ft_strchr(cmd->cmd, '/'))
 	{
 		handle_directory_command(cmd->cmd, all_commands, all_tokens, env);

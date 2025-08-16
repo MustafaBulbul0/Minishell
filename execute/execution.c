@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:48 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/14 23:30:33 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 13:04:17 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,60 +24,6 @@ static int	list_len(t_cmd *list)
 	}
 	return (i);
 }
-
-static void	cleanup_heredoc_files(char **heredoc_files, t_cmd *cmd_list)
-{
-	int				i;
-	t_cmd			*curr_cmd;
-	t_redirection	*curr_redir;
-	char			*delete_file;
-
-	if (!heredoc_files)
-		return;
-	i = 0;
-	while (heredoc_files[i])
-	{
-		delete_file = heredoc_files[i];
-		unlink(delete_file);
-		curr_cmd = cmd_list;
-		while (curr_cmd)
-		{
-			curr_redir = curr_cmd->redirections;
-			while (curr_redir)
-			{
-				if (curr_redir->infile == delete_file)
-					curr_redir->infile = NULL;
-				curr_redir = curr_redir->next;
-			}
-			curr_cmd = curr_cmd->next;
-		}
-		free(delete_file);
-		heredoc_files[i] = NULL;
-		i++;
-	}
-	free(heredoc_files);
-}
-
-static int	has_heredoc(t_cmd *cmd_list)
-{
-	t_cmd			*current_cmd;
-	t_redirection	*current_redir;
-
-	current_cmd = cmd_list;
-	while (current_cmd)
-	{
-		current_redir = current_cmd->redirections;
-		while (current_redir)
-		{
-			if (current_redir->type == T_HEREDOC)
-				return (1);
-			current_redir = current_redir->next;
-		}
-		current_cmd = current_cmd->next;
-	}
-	return (0);
-}
-
 
 static int	should_run_parent_builtin(t_cmd *cmd)
 {
@@ -113,6 +59,28 @@ void	cleanup_redirections(t_redirection *redirections)
 	}
 }
 
+static void	close_heredoc_fds(t_cmd *cmd_list)
+{
+	t_cmd			*curr_cmd;
+	t_redirection	*curr_redir;
+
+	curr_cmd = cmd_list;
+	while (curr_cmd)
+	{
+		curr_redir = curr_cmd->redirections;
+		while (curr_redir)
+		{
+			if (curr_redir->type == T_HEREDOC && curr_redir->heredoc_fd > 0)
+			{
+				close(curr_redir->heredoc_fd);
+				curr_redir->heredoc_fd = -1;
+			}
+			curr_redir = curr_redir->next;
+		}
+		curr_cmd = curr_cmd->next;
+	}
+}
+
 int	ft_execute(t_envlist *env, t_cmd *cmd_list, t_token *all_tokens)
 {
 	if (!cmd_list)
@@ -121,6 +89,13 @@ int	ft_execute(t_envlist *env, t_cmd *cmd_list, t_token *all_tokens)
 		return (PARSE_EXECUTE_OK);
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
+
+	// Handle case where there's no command but has heredocs
+	if (!cmd_list->cmd && cmd_list->redirections)
+	{
+		close_heredoc_fds(cmd_list);
+		return (PARSE_EXECUTE_OK);
+	}
 	if (list_len(cmd_list) == 1 && is_builtin(cmd_list)
 		&& should_run_parent_builtin(cmd_list))
 	{

@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:42 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 00:48:46 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:04:17 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,33 +51,34 @@ static void	prepare_child_process(t_cmd *cmd, int in_fd, int *pipe_fd)
 	}
 }
 
-static void	execute_child_process(t_cmd *cmd, int in_fd,
-		int *pipe_fd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens)
+static void	execute_child_process(t_cmd *cmd, int in_fd, int *pipe_fd, t_all *all_struct)
 {
-	int status;
+	int	status;
 
 	prepare_child_process(cmd, in_fd, pipe_fd);
 	if (handle_redirections_fd(cmd) != 0)
 	{
-		free_commands(all_commands);
-		free_tokens(all_tokens);
-		free_env(env);
+		free_t_all(all_struct);
 		exit(1);
 	}
 	if (is_builtin(cmd))
 	{
-		execute_builtin(cmd, env, 1);
+		execute_builtin(cmd, all_struct->env, 1);
 		status = g_last_exit;
-		free_commands(all_commands);
-		free_tokens(all_tokens);
-		free_env(env);
+		free_t_all(all_struct);
 		exit(status);
 	}
 	else
-		execute_external_command(cmd, env, all_commands, all_tokens);
+	{
+		execute_external_command(cmd, all_struct->env,
+			all_struct->all_commands, all_struct->all_tokens);
+		free_t_all(all_struct);  // This line won't actually execute since execute_external_command exits
+		exit(127);
+	}
 }
 
-void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens)
+void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
+			t_token *all_tokens)
 {
 	int		in_fd;
 	int		pipe_fd[2];
@@ -90,10 +91,15 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *
 	while (curr)
 	{
 		if (curr->next && pipe(pipe_fd) == -1)
-			return ;
+		{
+			if (pid == -1)  // No child processes created yet
+				return ;
+			break;
+		}
 		pid = fork();
 		if (pid == 0)
-			execute_child_process(curr, in_fd, pipe_fd, env, all_commands, all_tokens);
+			execute_child_process(curr, in_fd, pipe_fd,
+				all_struct(all_commands, env, all_tokens));
 		close_unused_fds(in_fd, pipe_fd, curr);
 		if (curr->next)
 			in_fd = pipe_fd[0];

@@ -3,42 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:09 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 21:22:09 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 11:40:26 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 int	g_last_exit = 0;
-
-void	signal_handler(int sig)
-{
-	(void)sig;
-	write(STDOUT_FILENO, "\n", 1);
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
-	g_last_exit = 130;
-}
-
-static int	input_control(char *input)
-{
-	if (!input)
-	{
-		printf("exit\n");
-		g_last_exit = 1;
-		return (1);
-	}
-	else if (!(*input))
-	{
-		free(input);
-		return (2);
-	}
-	return (0);
-}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -48,10 +22,7 @@ int	main(int argc, char **argv, char **envp)
 	int			should_exit;
 
 	g_last_exit = 0;
-	signal(SIGINT, signal_handler);
-	signal(SIGQUIT, SIG_IGN);
-	(void)argc;
-	(void)argv;
+	signals(argc, argv);
 	env = envp_init(envp);
 	while (1)
 	{

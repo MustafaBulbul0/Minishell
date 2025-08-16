@@ -11,13 +11,13 @@ SRCS = main.c \
 	execute/external_command.c execute/handle_redirection.c builtins/cd_utils.c \
 	builtins/cd.c builtins/echo.c builtins/export_utils_1.c builtins/export_utils_2.c \
 	builtins/pwd.c builtins/unset.c builtins/env.c builtins/exit.c builtins/export.c \
-	utils/envp_init.c utils/access_path.c utils/execution_utils.c \
-	utils/expand_utils.c utils/utils.c utils/parse_utils.c utils/free.c
+	utils/envp_init.c utils/access_path.c utils/execution_utils.c utils/main_utils.c \
+	utils/expand_utils.c utils/utils.c utils/parse_utils.c utils/free.c utils/free_two.c
 
 OBJS = $(patsubst %.c, $(OBJDIR)/%.o, $(SRCS))
 
 CC = cc
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
 all: $(LIBFT) $(NAME)

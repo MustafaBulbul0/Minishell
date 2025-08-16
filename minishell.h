@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/14 23:13:20 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 12:07:51 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@
 # include <readline/history.h>
 # include "./libft/libft.h"
 # include "./builtins/builtins.h"
-# include "./execute/execution.h"
 # include "./parse/parse.h"
 
 # define PARSE_EXECUTE_OK 0
@@ -74,13 +73,12 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
-typedef struct s_all_structs
+typedef struct s_all
 {
-	t_cmd			*cmd_list;
-	t_token			*tokens;
+	t_cmd			*all_commands;
 	t_envlist		*env;
-	t_redirection	*redirections;
-}	t_all_structs;
+	t_token			*all_tokens;
+}	t_all;
 
 char		*read_multiline_input(void);
 t_token		*tokenize(char *input);
@@ -112,8 +110,19 @@ void		execute_builtin(t_cmd *cmd, t_envlist *env, int is_child);
 char		*expand_tilde(char *str, t_envlist *env);
 void		signal_handler(int sig);
 int			get_last_process_status(pid_t last_pid);
-void		execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
-void		execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
-int			preprocess_heredocs(t_cmd *cmd_list, t_envlist *env, t_token *tokens);
+void		execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
+				t_token *all_tokens);
+void		execute_external_command(t_cmd *cmd, t_envlist *env,
+				t_cmd *all_commands, t_token *all_tokens);
+int			preprocess_heredocs(t_cmd *cmd_list, t_envlist *env,
+				t_token *tokens);
+char		**process_heredocs_in_cmd(t_cmd *curr_cmd, char **tmp_files,
+				int *i);
+int			handle_redirections_fd(t_cmd *cmd);
+int			input_control(char *input);
+void		signals(int argc, char **argv);
+t_all		*all_struct(t_cmd *all_comm,
+				t_envlist *env, t_token *all_tokens);
+void		free_t_all(t_all *all);
 
 #endif
