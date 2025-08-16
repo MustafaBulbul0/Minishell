@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 15:41:59 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:55:34 by esir             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,5 +126,6 @@ void		free_t_all(t_all *all);
 void		free_redirections(t_redirection *redirs);
 void		print_redir_error(char *filename);
 void		prepare_child_process(t_cmd *cmd, int in_fd, int *pipe_fd);
+void		wait_for_children(pid_t last_pid);
 
 #endif

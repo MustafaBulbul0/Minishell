@@ -6,23 +6,11 @@
 /*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:42 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 15:52:40 by esir             ###   ########.fr       */
+/*   Updated: 2025/08/16 15:55:59 by esir             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
-
-void	wait_for_children(pid_t last_pid)
-{
-	int	exit_status;
-
-	if (last_pid == -1)
-		return ;
-	exit_status = get_last_process_status(last_pid);
-	while (wait(NULL) > 0)
-		;
-	g_last_exit = exit_status;
-}
 
 static void	close_unused_fds(int in_fd, int *pipe_fd, t_cmd *curr)
 {
@@ -71,28 +59,22 @@ static pid_t	spawn_child_process(t_cmd *curr, int in_fd, int pipe_fd[2],
 	return (pid);
 }
 
-void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
-			t_token *all_tokens)
+static void	run_pipeline(t_cmd *cmd, t_all *all)
 {
 	int		in_fd;
 	int		pipe_fd[2];
 	pid_t	pid;
 	t_cmd	*curr;
-	t_all	*all;
 
 	in_fd = STDIN_FILENO;
 	curr = cmd;
 	pid = -1;
-	all = all_struct(all_commands, env, all_tokens);
 	while (curr)
 	{
 		if (curr->next && pipe(pipe_fd) == -1)
 		{
 			if (pid == -1)
-			{
-				free(all);
 				return ;
-			}
 			break ;
 		}
 		pid = spawn_child_process(curr, in_fd, pipe_fd, all);
@@ -102,5 +84,16 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 		curr = curr->next;
 	}
 	wait_for_children(pid);
+}
+
+void	execute_pipeline(t_cmd *cmd, t_envlist *env,
+			t_cmd *all_commands, t_token *all_tokens)
+{
+	t_all	*all;
+
+	all = all_struct(all_commands, env, all_tokens);
+	if (!all)
+		return ;
+	run_pipeline(cmd, all);
 	free(all);
 }

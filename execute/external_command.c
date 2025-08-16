@@ -3,14 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   external_command.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
+/*   By: esir <esir@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:54 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 14:11:05 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:54:58 by esir             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
+
+void	wait_for_children(pid_t last_pid)
+{
+	int	exit_status;
+
+	if (last_pid == -1)
+		return ;
+	exit_status = get_last_process_status(last_pid);
+	while (wait(NULL) > 0)
+		;
+	g_last_exit = exit_status;
+}
 
 static void	handle_directory_command(char *cmd_name, t_cmd *all_commands,
 		t_token *all_tokens, t_envlist *env)
