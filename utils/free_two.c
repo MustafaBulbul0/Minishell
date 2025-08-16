@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 12:00:25 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 12:07:32 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:24:12 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,5 @@ void    free_t_all(t_all *all)
     if (all->all_tokens)
         free_tokens(all->all_tokens);
     free(all);
+    all = NULL;
 }

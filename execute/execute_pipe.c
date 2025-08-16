@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:42 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 13:04:17 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:29:46 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,8 @@ static void	execute_child_process(t_cmd *cmd, int in_fd, int *pipe_fd, t_all *al
 	}
 	else
 	{
-		execute_external_command(cmd, all_struct->env,
-			all_struct->all_commands, all_struct->all_tokens);
-		free_t_all(all_struct);  // This line won't actually execute since execute_external_command exits
+		execute_external_command(cmd, all_struct);
+		free_t_all(all_struct);
 		exit(127);
 	}
 }
@@ -92,7 +91,7 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 	{
 		if (curr->next && pipe(pipe_fd) == -1)
 		{
-			if (pid == -1)  // No child processes created yet
+			if (pid == -1)
 				return ;
 			break;
 		}

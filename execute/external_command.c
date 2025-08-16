@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:54 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 13:04:17 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:31:54 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void	handle_directory_command(char *cmd_name, t_cmd *all_commands, t_toke
 	}
 }
 
-void	execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t_token *all_tokens)
+void	execute_external_command(t_cmd *cmd, t_all *all_struct)
 {
 	char	*path;
 	char	**envp;
@@ -36,28 +36,24 @@ void	execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t
 
 	if (!cmd->cmd || !*(cmd->cmd))
 	{
-		free_commands(all_commands);
-		free_tokens(all_tokens);
-		free_env(env);
+		free_t_all(all_struct);
 		exit(0);
 	}
 	if (ft_strchr(cmd->cmd, '/'))
 	{
-		handle_directory_command(cmd->cmd, all_commands, all_tokens, env);
+		handle_directory_command(cmd->cmd, all_struct->all_commands, all_struct->all_tokens, all_struct->env);
 		path = ft_strdup(cmd->cmd);
 	}
 	else
-		path = get_exec_path(cmd->cmd, env);
+		path = get_exec_path(cmd->cmd, all_struct->env);
 	if (!path)
 	{
 		write(2, cmd->cmd, ft_strlen(cmd->cmd));
 		write(2, ": command not found\n", 20);
-		free_commands(all_commands);
-		free_tokens(all_tokens);
-		free_env(env);
+		free_t_all(all_struct);
 		exit(127);
 	}
-	envp = envlist_to_array(env);
+	envp = envlist_to_array(all_struct->env);
 	execve(path, cmd->args, envp);
 	saved_errno = errno;
 	write(2, "minishell: ", 11);
@@ -67,9 +63,7 @@ void	execute_external_command(t_cmd *cmd, t_envlist *env, t_cmd *all_commands, t
 	write(2, "\n", 1);
 	free(path);
 	ft_free_split(envp);
-	free_commands(all_commands);
-	free_tokens(all_tokens);
-	free_env(env);
+	free_t_all(all_struct);
 	if (saved_errno == EACCES)
 		exit(126);
 	exit(127);
