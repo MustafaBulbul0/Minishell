@@ -3,23 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirection.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:16:03 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/14 23:32:56 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 14:35:08 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
-
-static void	print_redir_error(char *filename)
-{
-	write(2, "minishell: ", 11);
-	write(2, filename, ft_strlen(filename));
-	write(2, ": ", 2);
-	write(2, strerror(errno), ft_strlen(strerror(errno)));
-	write(2, "\n", 1);
-}
 
 static int	handle_infile_redirection(t_redirection *redir)
 {
@@ -54,6 +45,37 @@ static int	handle_outfile_redirection(t_redirection *redir)
 	return (0);
 }
 
+static int	handle_input_redirection(t_redirection *redir)
+{
+	int	ret;
+
+	if (redir->type == T_HEREDOC)
+	{
+		dup2(redir->heredoc_fd, STDIN_FILENO);
+		close(redir->heredoc_fd);
+	}
+	else if (redir->infile)
+	{
+		ret = handle_infile_redirection(redir);
+		if (ret != 0)
+			return (ret);
+	}
+	return (0);
+}
+
+static int	handle_output_redirection(t_redirection *redir)
+{
+	int	ret;
+
+	if (redir->outfile)
+	{
+		ret = handle_outfile_redirection(redir);
+		if (ret != 0)
+			return (ret);
+	}
+	return (0);
+}
+
 int	handle_redirections_fd(t_cmd *cmd)
 {
 	t_redirection	*redir;
@@ -62,23 +84,12 @@ int	handle_redirections_fd(t_cmd *cmd)
 	redir = cmd->redirections;
 	while (redir)
 	{
-		if (redir->type == T_HEREDOC)
-		{
-			dup2(redir->heredoc_fd, STDIN_FILENO);
-			close(redir->heredoc_fd);
-		}
-		else if (redir->infile)
-		{
-			ret = handle_infile_redirection(redir);
-			if (ret != 0)
-				return (ret);
-		}
-		if (redir->outfile)
-		{
-			ret = handle_outfile_redirection(redir);
-			if (ret != 0)
-				return (ret);
-		}
+		ret = handle_input_redirection(redir);
+		if (ret != 0)
+			return (ret);
+		ret = handle_output_redirection(redir);
+		if (ret != 0)
+			return (ret);
 		redir = redir->next;
 	}
 	return (0);

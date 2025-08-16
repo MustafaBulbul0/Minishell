@@ -3,34 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:17:51 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 17:33:37 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 14:47:41 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-void	execute_builtin(t_cmd *cmd, t_envlist *env, int is_child)
-{
-	if (!cmd || !cmd->cmd)
-		return ;
-	if (ft_strcmp(cmd->cmd, "echo") == 0)
-		builtin_echo(cmd);
-	else if (ft_strcmp(cmd->cmd, "env") == 0)
-		builtin_env(env);
-	else if (ft_strcmp(cmd->cmd, "exit") == 0)
-		builtin_exit(cmd, is_child);
-	else if (ft_strcmp(cmd->cmd, "pwd") == 0)
-		builtin_pwd();
-	else if (ft_strcmp(cmd->cmd, "cd") == 0)
-		builtin_cd(cmd->args, env);
-	else if (ft_strcmp(cmd->cmd, "unset") == 0)
-		builtin_unset(env, cmd->args);
-	else if (ft_strcmp(cmd->cmd, "export") == 0)
-		builtin_export(env, cmd->args);
-}
 
 static int	count_env_nodes(t_envlist *env)
 {
@@ -65,6 +45,17 @@ static char	*create_env_string(t_envlist *node)
 		return (ft_strjoin_three(node->key, "=", ""));
 }
 
+static void	free_partial_array(char **arr, int i)
+{
+	while (i > 0)
+	{
+		i--;
+		free(arr[i]);
+	}
+	free(arr[i]);
+	free(arr);
+}
+
 char	**envlist_to_array(t_envlist *env)
 {
 	int			i;
@@ -83,12 +74,7 @@ char	**envlist_to_array(t_envlist *env)
 		arr[i] = create_env_string(tmp);
 		if (!arr[i])
 		{
-			while (i > 0)
-			{
-				i--;
-				free(arr[i]);
-			}
-			free(arr);
+			free_partial_array(arr, i);
 			return (NULL);
 		}
 		i++;

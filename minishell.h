@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:18:41 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 13:30:57 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 14:36:56 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,5 +123,7 @@ void		signals(int argc, char **argv);
 t_all		*all_struct(t_cmd *all_comm,
 				t_envlist *env, t_token *all_tokens);
 void		free_t_all(t_all *all);
+void		free_redirections(t_redirection *redirs);
+void		print_redir_error(char *filename);
 
 #endif

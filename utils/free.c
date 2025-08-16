@@ -3,31 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:17:58 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/10 21:34:45 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 13:55:49 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
 
-void	ft_free_split(char **args)
-{
-	int	i;
-
-	if (!args)
-		return ;
-	i = 0;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
-}
-
-static void	free_redirections(t_redirection *redirs)
+void	free_redirections(t_redirection *redirs)
 {
 	t_redirection	*tmp;
 
@@ -89,16 +74,4 @@ void	free_env(t_envlist *env)
 		free(current);
 		current = next_node;
 	}
-}
-
-void	free_all(t_cmd *cmd_list, t_token *tokens, t_envlist *env, t_redirection *redirections)
-{
-	if (cmd_list)
-		free_commands(cmd_list);
-	if (tokens)
-		free_tokens(tokens);
-	if (env)
-		free_env(env);
-	if (redirections)
-		free_redirections(redirections);
 }

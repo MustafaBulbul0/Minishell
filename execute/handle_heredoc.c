@@ -3,20 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   handle_heredoc.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mustafa <mustafa@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:59 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/14 23:31:13 by mustafa          ###   ########.fr       */
+/*   Updated: 2025/08/16 13:57:22 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
-
-static int	wait_for_heredoc_child(pid_t pid);
-static void	handle_heredoc_child(t_redirection *redir, int write_fd,
-				t_envlist *env, t_cmd *all_commands, t_token *all_tokens);
-static int	setup_heredoc(t_redirection *redir, t_envlist *env,
-				t_cmd *all_commands, t_token *all_tokens);
 
 static char	*expand_heredoc_line(char *line, t_envlist *env)
 {
@@ -32,7 +26,7 @@ static char	*expand_heredoc_line(char *line, t_envlist *env)
 }
 
 static void	handle_heredoc_child(t_redirection *redir, int write_fd,
-	t_envlist *env, t_cmd *all_commands, t_token *all_tokens)
+			t_all *all)
 {
 	char	*line;
 	int		is_quoted;
@@ -51,16 +45,28 @@ static void	handle_heredoc_child(t_redirection *redir, int write_fd,
 			break ;
 		}
 		if (!is_quoted)
-			line = expand_heredoc_line(line, env);
+			line = expand_heredoc_line(line, all->env);
 		write(write_fd, line, ft_strlen(line));
 		write(write_fd, "\n", 1);
 		free(line);
 	}
 	close(write_fd);
-	free_commands(all_commands);
-	free_tokens(all_tokens);
-	free_env(env);
+	free_t_all(all);
 	exit(0);
+}
+
+static int	wait_for_heredoc_child(pid_t pid)
+{
+	int	status;
+
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
+		g_last_exit = 130;
+		write(STDOUT_FILENO, "\n", 1);
+		return (1);
+	}
+	return (0);
 }
 
 static int	setup_heredoc(t_redirection *redir, t_envlist *env,
@@ -78,26 +84,13 @@ static int	setup_heredoc(t_redirection *redir, t_envlist *env,
 	if (pid == 0)
 	{
 		close(pipe_fd[0]);
-		handle_heredoc_child(redir, pipe_fd[1], env, all_commands, all_tokens);
+		handle_heredoc_child(redir, pipe_fd[1],
+			all_struct(all_commands, env, all_tokens));
 	}
 	close(pipe_fd[1]);
 	redir->heredoc_fd = pipe_fd[0];
 	status = wait_for_heredoc_child(pid);
 	return (status);
-}
-
-static int	wait_for_heredoc_child(pid_t pid)
-{
-	int	status;
-
-	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-	{
-		g_last_exit = 130;
-		write(STDOUT_FILENO, "\n", 1);
-		return (1);
-	}
-	return (0);
 }
 
 int	preprocess_heredocs(t_cmd *cmd_list, t_envlist *env, t_token *all_tokens)

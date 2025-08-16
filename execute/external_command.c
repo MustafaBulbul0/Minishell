@@ -6,13 +6,14 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:54 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 13:31:54 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 14:11:05 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../minishell.h"
 
-static void	handle_directory_command(char *cmd_name, t_cmd *all_commands, t_token *all_tokens, t_envlist *env)
+static void	handle_directory_command(char *cmd_name, t_cmd *all_commands,
+		t_token *all_tokens, t_envlist *env)
 {
 	struct stat	path_stat;
 
@@ -28,11 +29,9 @@ static void	handle_directory_command(char *cmd_name, t_cmd *all_commands, t_toke
 	}
 }
 
-void	execute_external_command(t_cmd *cmd, t_all *all_struct)
+static char	*resolve_command_path(t_cmd *cmd, t_all *all_struct)
 {
 	char	*path;
-	char	**envp;
-	int		saved_errno;
 
 	if (!cmd->cmd || !*(cmd->cmd))
 	{
@@ -41,7 +40,8 @@ void	execute_external_command(t_cmd *cmd, t_all *all_struct)
 	}
 	if (ft_strchr(cmd->cmd, '/'))
 	{
-		handle_directory_command(cmd->cmd, all_struct->all_commands, all_struct->all_tokens, all_struct->env);
+		handle_directory_command(cmd->cmd, all_struct->all_commands,
+			all_struct->all_tokens, all_struct->env);
 		path = ft_strdup(cmd->cmd);
 	}
 	else
@@ -53,6 +53,16 @@ void	execute_external_command(t_cmd *cmd, t_all *all_struct)
 		free_t_all(all_struct);
 		exit(127);
 	}
+	return (path);
+}
+
+void	execute_external_command(t_cmd *cmd, t_all *all_struct)
+{
+	char	*path;
+	char	**envp;
+	int		saved_errno;
+
+	path = resolve_command_path(cmd, all_struct);
 	envp = envlist_to_array(all_struct->env);
 	execve(path, cmd->args, envp);
 	saved_errno = errno;

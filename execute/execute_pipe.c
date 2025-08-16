@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:42 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 13:29:46 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 13:58:25 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ static void	prepare_child_process(t_cmd *cmd, int in_fd, int *pipe_fd)
 	}
 }
 
-static void	execute_child_process(t_cmd *cmd, int in_fd, int *pipe_fd, t_all *all_struct)
+static void	execute_child_process(t_cmd *cmd, int in_fd, int *pipe_fd,
+		t_all *all_struct)
 {
 	int	status;
 
@@ -84,7 +85,6 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 	pid_t	pid;
 	t_cmd	*curr;
 
-	in_fd = STDIN_FILENO;
 	curr = cmd;
 	pid = -1;
 	while (curr)
@@ -93,13 +93,13 @@ void	execute_pipeline(t_cmd *cmd, t_envlist *env, t_cmd *all_commands,
 		{
 			if (pid == -1)
 				return ;
-			break;
+			break ;
 		}
 		pid = fork();
 		if (pid == 0)
-			execute_child_process(curr, in_fd, pipe_fd,
+			execute_child_process(curr, STDIN_FILENO, pipe_fd,
 				all_struct(all_commands, env, all_tokens));
-		close_unused_fds(in_fd, pipe_fd, curr);
+		close_unused_fds(STDIN_FILENO, pipe_fd, curr);
 		if (curr->next)
 			in_fd = pipe_fd[0];
 		curr = curr->next;

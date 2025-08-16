@@ -6,7 +6,7 @@
 /*   By: mubulbul <mubulbul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 12:15:48 by mubulbul          #+#    #+#             */
-/*   Updated: 2025/08/16 13:04:17 by mubulbul         ###   ########.fr       */
+/*   Updated: 2025/08/16 14:01:01 by mubulbul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,13 +89,8 @@ int	ft_execute(t_envlist *env, t_cmd *cmd_list, t_token *all_tokens)
 		return (PARSE_EXECUTE_OK);
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
-
-	// Handle case where there's no command but has heredocs
 	if (!cmd_list->cmd && cmd_list->redirections)
-	{
-		close_heredoc_fds(cmd_list);
-		return (PARSE_EXECUTE_OK);
-	}
+		return (close_heredoc_fds(cmd_list), PARSE_EXECUTE_OK);
 	if (list_len(cmd_list) == 1 && is_builtin(cmd_list)
 		&& should_run_parent_builtin(cmd_list))
 	{
